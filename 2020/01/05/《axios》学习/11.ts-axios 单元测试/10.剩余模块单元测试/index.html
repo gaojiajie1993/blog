@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="剩余模块单元测试defaults 模块单元测试defaults 模块为请求配置提供了一些默认的属性和方法，我们需要为其编写单元测试。 test&#x2F;defaults.spec.ts：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="剩余模块单元测试">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="剩余模块单元测试defaults 模块单元测试defaults 模块为请求配置提供了一些默认的属性和方法，我们需要为其编写单元测试。 test&#x2F;defaults.spec.ts：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-05T02:56:02.000Z">
+<meta property="article:modified_time" content="2023-03-04T08:14:04.947Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="axios">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/","path":"2020/01/05/《axios》学习/11.ts-axios 单元测试/10.剩余模块单元测试/","title":"剩余模块单元测试"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>剩余模块单元测试 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">151</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.</span> <span class="nav-text">剩余模块单元测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#defaults-%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.1.</span> <span class="nav-text">defaults 模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#transform-%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.2.</span> <span class="nav-text">transform 模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xsrf-%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.3.</span> <span class="nav-text">xsrf 模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%BC%A0%E4%B8%8B%E8%BD%BD%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.4.</span> <span class="nav-text">上传下载模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E6%8E%88%E6%9D%83%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.5.</span> <span class="nav-text">HTTP 授权模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95"><span class="nav-number">1.6.</span> <span class="nav-text">静态方法模块单元测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A1%A5%E5%85%85%E6%9C%AA%E8%A6%86%E7%9B%96%E7%9A%84%E4%BB%A3%E7%A0%81%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.</span> <span class="nav-text">补充未覆盖的代码测试</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">151</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="剩余模块单元测试 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          剩余模块单元测试<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-05 10:56:02" itemprop="dateCreated datePublished" datetime="2020-01-05T10:56:02+08:00">2020-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-04 16:14:04" itemprop="dateModified" datetime="2023-03-04T16:14:04+08:00">2023-03-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">《axios》学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="剩余模块单元测试"><a href="#剩余模块单元测试" class="headerlink" title="剩余模块单元测试"></a>剩余模块单元测试</h1><h2 id="defaults-模块单元测试"><a href="#defaults-模块单元测试" class="headerlink" title="defaults 模块单元测试"></a>defaults 模块单元测试</h2><p><code>defaults</code> 模块为请求配置提供了一些默认的属性和方法，我们需要为其编写单元测试。</p>
+<p><code>test/defaults.spec.ts</code>：</p>
+<span id="more"></span>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios, &#123; <span class="title class_">AxiosTransformer</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; getAjaxRequest &#125; <span class="keyword">from</span> <span class="string">&#x27;./helper&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; deepMerge &#125; <span class="keyword">from</span> <span class="string">&#x27;../src/helpers/util&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;defaults&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">beforeEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">install</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">afterEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">uninstall</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should transform request json&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">expect</span>((axios.<span class="property">defaults</span>.<span class="property">transformRequest</span> <span class="keyword">as</span> <span class="title class_">AxiosTransformer</span>[])[<span class="number">0</span>](&#123; <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span> &#125;)).<span class="title function_">toBe</span>(<span class="string">&#x27;&#123;&quot;foo&quot;:&quot;bar&quot;&#125;&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should do nothing to request string&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">expect</span>((axios.<span class="property">defaults</span>.<span class="property">transformRequest</span> <span class="keyword">as</span> <span class="title class_">AxiosTransformer</span>[])[<span class="number">0</span>](<span class="string">&#x27;foo=bar&#x27;</span>)).<span class="title function_">toBe</span>(<span class="string">&#x27;foo=bar&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should transform response json&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> data = (axios.<span class="property">defaults</span>.<span class="property">transformResponse</span> <span class="keyword">as</span> <span class="title class_">AxiosTransformer</span>[])[<span class="number">0</span>](<span class="string">&#x27;&#123;&quot;foo&quot;:&quot;bar&quot;&#125;&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="title function_">expect</span>(<span class="keyword">typeof</span> data).<span class="title function_">toBe</span>(<span class="string">&#x27;object&#x27;</span>)</span><br><span class="line">    <span class="title function_">expect</span>(data.<span class="property">foo</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;bar&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should do nothing to response string&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">expect</span>((axios.<span class="property">defaults</span>.<span class="property">transformResponse</span> <span class="keyword">as</span> <span class="title class_">AxiosTransformer</span>[])[<span class="number">0</span>](<span class="string">&#x27;foo=bar&#x27;</span>)).<span class="title function_">toBe</span>(<span class="string">&#x27;foo=bar&#x27;</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use global defaults config&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">url</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use modified defaults config&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    axios.<span class="property">defaults</span>.<span class="property">baseURL</span> = <span class="string">&#x27;http://example.com/&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">url</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;http://example.com/foo&#x27;</span>)</span><br><span class="line">      <span class="keyword">delete</span> axios.<span class="property">defaults</span>.<span class="property">baseURL</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use request config&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">baseURL</span>: <span class="string">&#x27;http://www.example.com&#x27;</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">url</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;http://www.example.com/foo&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use default config for custom instance&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> instance = axios.<span class="title function_">create</span>(&#123;</span><br><span class="line">      <span class="attr">xsrfCookieName</span>: <span class="string">&#x27;CUSTOM-XSRF-TOKEN&#x27;</span>,</span><br><span class="line">      <span class="attr">xsrfHeaderName</span>: <span class="string">&#x27;X-CUSTOM-XSRF-TOKEN&#x27;</span></span><br><span class="line">    &#125;)</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">cookie</span> = instance.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> + <span class="string">&#x27;=foobarbaz&#x27;</span></span><br><span class="line"></span><br><span class="line">    instance.<span class="title function_">get</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[instance.<span class="property">defaults</span>.<span class="property">xsrfHeaderName</span>!]).<span class="title function_">toBe</span>(<span class="string">&#x27;foobarbaz&#x27;</span>)</span><br><span class="line">      <span class="variable language_">document</span>.<span class="property">cookie</span> =</span><br><span class="line">        instance.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> +</span><br><span class="line">        <span class="string">&#x27;=;expires=&#x27;</span> +</span><br><span class="line">        <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - <span class="number">86400000</span>).<span class="title function_">toUTCString</span>()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use GET headers&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">get</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>] = <span class="string">&#x27;foo&#x27;</span></span><br><span class="line">    axios.<span class="title function_">get</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>]).<span class="title function_">toBe</span>(<span class="string">&#x27;foo&#x27;</span>)</span><br><span class="line">      <span class="keyword">delete</span> axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">get</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>]</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use POST headers&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">post</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>] = <span class="string">&#x27;foo&#x27;</span></span><br><span class="line">    axios.<span class="title function_">post</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;&#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>]).<span class="title function_">toBe</span>(<span class="string">&#x27;foo&#x27;</span>)</span><br><span class="line">      <span class="keyword">delete</span> axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">post</span>[<span class="string">&#x27;X-CUSTOM-HEADER&#x27;</span>]</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should use header config&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> instance = axios.<span class="title function_">create</span>(&#123;</span><br><span class="line">      <span class="attr">headers</span>: &#123;</span><br><span class="line">        <span class="attr">common</span>: &#123;</span><br><span class="line">          <span class="string">&#x27;X-COMMON-HEADER&#x27;</span>: <span class="string">&#x27;commonHeaderValue&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">get</span>: &#123;</span><br><span class="line">          <span class="string">&#x27;X-GET-HEADER&#x27;</span>: <span class="string">&#x27;getHeaderValue&#x27;</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">post</span>: &#123;</span><br><span class="line">          <span class="string">&#x27;X-POST-HEADER&#x27;</span>: <span class="string">&#x27;postHeaderValue&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    instance.<span class="title function_">get</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">headers</span>: &#123;</span><br><span class="line">        <span class="string">&#x27;X-FOO-HEADER&#x27;</span>: <span class="string">&#x27;fooHeaderValue&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;X-BAR-HEADER&#x27;</span>: <span class="string">&#x27;barHeaderValue&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>).<span class="title function_">toEqual</span>(</span><br><span class="line">        <span class="title function_">deepMerge</span>(axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">common</span>, axios.<span class="property">defaults</span>.<span class="property">headers</span>.<span class="property">get</span>, &#123;</span><br><span class="line">          <span class="string">&#x27;X-COMMON-HEADER&#x27;</span>: <span class="string">&#x27;commonHeaderValue&#x27;</span>,</span><br><span class="line">          <span class="string">&#x27;X-GET-HEADER&#x27;</span>: <span class="string">&#x27;getHeaderValue&#x27;</span>,</span><br><span class="line">          <span class="string">&#x27;X-FOO-HEADER&#x27;</span>: <span class="string">&#x27;fooHeaderValue&#x27;</span>,</span><br><span class="line">          <span class="string">&#x27;X-BAR-HEADER&#x27;</span>: <span class="string">&#x27;barHeaderValue&#x27;</span></span><br><span class="line">        &#125;)</span><br><span class="line">      )</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should be used by custom instance if set before instance created&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    axios.<span class="property">defaults</span>.<span class="property">baseURL</span> = <span class="string">&#x27;http://example.org/&#x27;</span></span><br><span class="line">    <span class="keyword">const</span> instance = axios.<span class="title function_">create</span>()</span><br><span class="line"></span><br><span class="line">    instance.<span class="title function_">get</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">url</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;http://example.org/foo&#x27;</span>)</span><br><span class="line">      <span class="keyword">delete</span> axios.<span class="property">defaults</span>.<span class="property">baseURL</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should not be used by custom instance if set after instance created&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> instance = axios.<span class="title function_">create</span>()</span><br><span class="line">    axios.<span class="property">defaults</span>.<span class="property">baseURL</span> = <span class="string">&#x27;http://example.org/&#x27;</span></span><br><span class="line"></span><br><span class="line">    instance.<span class="title function_">get</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">url</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="transform-模块单元测试"><a href="#transform-模块单元测试" class="headerlink" title="transform 模块单元测试"></a>transform 模块单元测试</h2><p><code>transform</code> 模块用来定义请求和响应的转换方法，我们需要为其编写单元测试。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios, &#123; <span class="title class_">AxiosResponse</span>, <span class="title class_">AxiosTransformer</span> &#125; <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; getAjaxRequest &#125; <span class="keyword">from</span> <span class="string">&#x27;./helper&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;transform&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">beforeEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">install</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">afterEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">uninstall</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should transform JSON to string&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> data = &#123;</span><br><span class="line">      <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    axios.<span class="title function_">post</span>(<span class="string">&#x27;/foo&#x27;</span>, data)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">params</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;&#123;&quot;foo&quot;:&quot;bar&quot;&#125;&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should transform string to JSON&#x27;</span>, <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="attr">response</span>: <span class="title class_">AxiosResponse</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>).<span class="title function_">then</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">      response = res</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      request.<span class="title function_">respondWith</span>(&#123;</span><br><span class="line">        <span class="attr">status</span>: <span class="number">200</span>,</span><br><span class="line">        <span class="attr">responseText</span>: <span class="string">&#x27;&#123;&quot;foo&quot;: &quot;bar&quot;&#125;&#x27;</span></span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">      <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">expect</span>(<span class="keyword">typeof</span> response.<span class="property">data</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;object&#x27;</span>)</span><br><span class="line">        <span class="title function_">expect</span>(response.<span class="property">data</span>.<span class="property">foo</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;bar&#x27;</span>)</span><br><span class="line">        <span class="title function_">done</span>()</span><br><span class="line">      &#125;, <span class="number">100</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should override default transform&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> data = &#123;</span><br><span class="line">      <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    axios.<span class="title function_">post</span>(<span class="string">&#x27;/foo&#x27;</span>, data, &#123;</span><br><span class="line">      <span class="title function_">transformRequest</span>(<span class="params">data</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> data</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">params</span>).<span class="title function_">toEqual</span>(&#123; <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span> &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should allow an Array of transformers&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> data = &#123;</span><br><span class="line">      <span class="attr">foo</span>: <span class="string">&#x27;bar&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    axios.<span class="title function_">post</span>(<span class="string">&#x27;/foo&#x27;</span>, data, &#123;</span><br><span class="line">      <span class="attr">transformRequest</span>: (axios.<span class="property">defaults</span>.<span class="property">transformRequest</span> <span class="keyword">as</span> <span class="title class_">AxiosTransformer</span>[]).<span class="title function_">concat</span>(<span class="keyword">function</span>(<span class="params"></span></span><br><span class="line"><span class="params">        data</span></span><br><span class="line"><span class="params">      </span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> data.<span class="title function_">replace</span>(<span class="string">&#x27;bar&#x27;</span>, <span class="string">&#x27;baz&#x27;</span>)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">params</span>).<span class="title function_">toBe</span>(<span class="string">&#x27;&#123;&quot;foo&quot;:&quot;baz&quot;&#125;&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should allowing mutating headers&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> token = <span class="title class_">Math</span>.<span class="title function_">floor</span>(<span class="title class_">Math</span>.<span class="title function_">random</span>() * <span class="title class_">Math</span>.<span class="title function_">pow</span>(<span class="number">2</span>, <span class="number">64</span>)).<span class="title function_">toString</span>(<span class="number">36</span>)</span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">transformRequest</span>: <span class="function">(<span class="params">data, headers</span>) =&gt;</span> &#123;</span><br><span class="line">        headers[<span class="string">&#x27;X-Authorization&#x27;</span>] = token</span><br><span class="line">        <span class="keyword">return</span> data</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[<span class="string">&#x27;X-Authorization&#x27;</span>]).<span class="title function_">toEqual</span>(token)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="xsrf-模块单元测试"><a href="#xsrf-模块单元测试" class="headerlink" title="xsrf 模块单元测试"></a>xsrf 模块单元测试</h2><p><code>xsrf</code> 模块提供了一套防御 <code>xsrf</code> 攻击的解决方案，我们需要为其编写单元测试。</p>
+<p><code>test/xsrf.spec.ts</code>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; getAjaxRequest &#125; <span class="keyword">from</span> <span class="string">&#x27;./helper&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;xsrf&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">beforeEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">install</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">afterEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">uninstall</span>()</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">cookie</span> =</span><br><span class="line">      axios.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> + <span class="string">&#x27;=;expires=&#x27;</span> + <span class="keyword">new</span> <span class="title class_">Date</span>(<span class="title class_">Date</span>.<span class="title function_">now</span>() - <span class="number">86400000</span>).<span class="title function_">toUTCString</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should not set xsrf header if cookie is null&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[axios.<span class="property">defaults</span>.<span class="property">xsrfHeaderName</span>!]).<span class="title function_">toBeUndefined</span>()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should set xsrf header if cookie is set&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">cookie</span> = axios.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> + <span class="string">&#x27;=12345&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[axios.<span class="property">defaults</span>.<span class="property">xsrfHeaderName</span>!]).<span class="title function_">toBe</span>(<span class="string">&#x27;12345&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should not set xsrf header for cross origin&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">cookie</span> = axios.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> + <span class="string">&#x27;=12345&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;http://example.com/&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[axios.<span class="property">defaults</span>.<span class="property">xsrfHeaderName</span>!]).<span class="title function_">toBeUndefined</span>()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should set xsrf header for cross origin when using withCredentials&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="property">cookie</span> = axios.<span class="property">defaults</span>.<span class="property">xsrfCookieName</span> + <span class="string">&#x27;=12345&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;http://example.com/&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">withCredentials</span>: <span class="literal">true</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[axios.<span class="property">defaults</span>.<span class="property">xsrfHeaderName</span>!]).<span class="title function_">toBe</span>(<span class="string">&#x27;12345&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>注意在 <code>afterEach</code> 函数中我们清空了 <code>xsrf</code> 相关的 cookie。</p>
+<h2 id="上传下载模块单元测试"><a href="#上传下载模块单元测试" class="headerlink" title="上传下载模块单元测试"></a>上传下载模块单元测试</h2><p>上传下载模块允许我们监听上传和下载的进度，我们需要为其编写单元测试。</p>
+<p><code>test/progress.spec.ts</code>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; getAjaxRequest &#125; <span class="keyword">from</span> <span class="string">&#x27;./helper&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;progress&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">beforeEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">install</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">afterEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">uninstall</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should add a download progress handler&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> progressSpy = jest.<span class="title function_">fn</span>()</span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123; <span class="attr">onDownloadProgress</span>: progressSpy &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      request.<span class="title function_">respondWith</span>(&#123;</span><br><span class="line">        <span class="attr">status</span>: <span class="number">200</span>,</span><br><span class="line">        <span class="attr">responseText</span>: <span class="string">&#x27;&#123;&quot;foo&quot;: &quot;bar&quot;&#125;&#x27;</span></span><br><span class="line">      &#125;)</span><br><span class="line">      <span class="title function_">expect</span>(progressSpy).<span class="title function_">toHaveBeenCalled</span>()</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should add a upload progress handler&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> progressSpy = jest.<span class="title function_">fn</span>()</span><br><span class="line"></span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123; <span class="attr">onUploadProgress</span>: progressSpy &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="comment">// Jasmine AJAX doesn&#x27;t trigger upload events.Waiting for jest-ajax fix</span></span><br><span class="line">      <span class="comment">// expect(progressSpy).toHaveBeenCalled()</span></span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>注意，由于 <code>jasmine-ajax</code> 插件不会派发 <code>upload</code> 事件，这个未来可以通过我们自己编写的 <code>jest-ajax</code> 插件来解决，目前不写断言的情况它会直接通过。</p>
+<h2 id="HTTP-授权模块单元测试"><a href="#HTTP-授权模块单元测试" class="headerlink" title="HTTP 授权模块单元测试"></a>HTTP 授权模块单元测试</h2><p>HTTP 授权模块为我们在请求头中添加 <code>Authorization</code> 字段，我们需要为其编写单元测试。</p>
+<p><code>test/auth.spec.ts</code>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"><span class="keyword">import</span> &#123; getAjaxRequest &#125; <span class="keyword">from</span> <span class="string">&#x27;./helper&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;auth&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">beforeEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">install</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">afterEach</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">    jasmine.<span class="property">Ajax</span>.<span class="title function_">uninstall</span>()</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should accept HTTP Basic auth with username/password&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">auth</span>: &#123;</span><br><span class="line">        <span class="attr">username</span>: <span class="string">&#x27;Aladdin&#x27;</span>,</span><br><span class="line">        <span class="attr">password</span>: <span class="string">&#x27;open sesame&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(request.<span class="property">requestHeaders</span>[<span class="string">&#x27;Authorization&#x27;</span>]).<span class="title function_">toBe</span>(<span class="string">&#x27;Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should fail to encode HTTP Basic auth credentials with non-Latin1 characters&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">      <span class="attr">auth</span>: &#123;</span><br><span class="line">        <span class="attr">username</span>: <span class="string">&#x27;Aladßç£☃din&#x27;</span>,</span><br><span class="line">        <span class="attr">password</span>: <span class="string">&#x27;open sesame&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">      .<span class="title function_">then</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">Error</span>(</span><br><span class="line">          <span class="string">&#x27;Should not succeed to make a HTTP Basic auth request with non-latin1 chars in credentials.&#x27;</span></span><br><span class="line">        )</span><br><span class="line">      &#125;)</span><br><span class="line">      .<span class="title function_">catch</span>(<span class="function"><span class="params">error</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="title function_">expect</span>(<span class="regexp">/character/i</span>.<span class="title function_">test</span>(error.<span class="property">message</span>)).<span class="title function_">toBeTruthy</span>()</span><br><span class="line">      &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="静态方法模块单元测试"><a href="#静态方法模块单元测试" class="headerlink" title="静态方法模块单元测试"></a>静态方法模块单元测试</h2><p>静态方法模块为 <code>axios</code> 对象添加了 2 个静态方法，我们需要为其编写单元测试。</p>
+<p><code>test/static.spec.ts</code>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> axios <span class="keyword">from</span> <span class="string">&#x27;../src/index&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="title function_">describe</span>(<span class="string">&#x27;promise&#x27;</span>, <span class="function">() =&gt;</span> &#123;</span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should support all&#x27;</span>, <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> fulfilled = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    axios.<span class="title function_">all</span>([<span class="literal">true</span>, <span class="literal">false</span>]).<span class="title function_">then</span>(<span class="function"><span class="params">arg</span> =&gt;</span> &#123;</span><br><span class="line">      fulfilled = arg[<span class="number">0</span>]</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(fulfilled).<span class="title function_">toBeTruthy</span>()</span><br><span class="line">      <span class="title function_">done</span>()</span><br><span class="line">    &#125;, <span class="number">100</span>)</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">test</span>(<span class="string">&#x27;should support spread&#x27;</span>, <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> sum = <span class="number">0</span></span><br><span class="line">    <span class="keyword">let</span> fulfilled = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">let</span> <span class="attr">result</span>: <span class="built_in">any</span></span><br><span class="line"></span><br><span class="line">    axios</span><br><span class="line">      .<span class="title function_">all</span>([<span class="number">123</span>, <span class="number">456</span>])</span><br><span class="line">      .<span class="title function_">then</span>(</span><br><span class="line">        axios.<span class="title function_">spread</span>(<span class="function">(<span class="params">a, b</span>) =&gt;</span> &#123;</span><br><span class="line">          sum = a + b</span><br><span class="line">          fulfilled = <span class="literal">true</span></span><br><span class="line">          <span class="keyword">return</span> <span class="string">&#x27;hello world&#x27;</span></span><br><span class="line">        &#125;)</span><br><span class="line">      )</span><br><span class="line">      .<span class="title function_">then</span>(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">        result = res</span><br><span class="line">      &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(fulfilled).<span class="title function_">toBeTruthy</span>()</span><br><span class="line">      <span class="title function_">expect</span>(sum).<span class="title function_">toBe</span>(<span class="number">123</span> + <span class="number">456</span>)</span><br><span class="line">      <span class="title function_">expect</span>(result).<span class="title function_">toBe</span>(<span class="string">&#x27;hello world&#x27;</span>)</span><br><span class="line">      <span class="title function_">done</span>()</span><br><span class="line">    &#125;, <span class="number">100</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="补充未覆盖的代码测试"><a href="#补充未覆盖的代码测试" class="headerlink" title="补充未覆盖的代码测试"></a>补充未覆盖的代码测试</h2><p>我们发现，跑完测试后，仍有一些代码没有覆盖到测试，其中 <code>core/xhr.ts</code> 文件的第 43 行：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (responseType) &#123;</span><br><span class="line">  request.<span class="property">responseType</span> = responseType</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们并未在测试中设置过 <code>responseType</code>，因此我们在 <code>test/requests.spect.ts</code> 文件中补充相关测试：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_">test</span>(<span class="string">&#x27;should support array buffer response&#x27;</span>, <span class="function"><span class="params">done</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> <span class="attr">response</span>: <span class="title class_">AxiosResponse</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">str2ab</span>(<span class="params">str: <span class="built_in">string</span></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> buff = <span class="keyword">new</span> <span class="title class_">ArrayBuffer</span>(str.<span class="property">length</span> * <span class="number">2</span>)</span><br><span class="line">    <span class="keyword">const</span> view = <span class="keyword">new</span> <span class="title class_">Uint16Array</span>(buff)</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; str.<span class="property">length</span>; i++) &#123;</span><br><span class="line">      view[i] = str.<span class="title function_">charCodeAt</span>(i)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> buff</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="title function_">axios</span>(<span class="string">&#x27;/foo&#x27;</span>, &#123;</span><br><span class="line">    <span class="attr">responseType</span>: <span class="string">&#x27;arraybuffer&#x27;</span></span><br><span class="line">  &#125;).<span class="title function_">then</span>(<span class="function"><span class="params">data</span> =&gt;</span> &#123;</span><br><span class="line">    response = data</span><br><span class="line">  &#125;)</span><br><span class="line"></span><br><span class="line">  <span class="title function_">getAjaxRequest</span>().<span class="title function_">then</span>(<span class="function"><span class="params">request</span> =&gt;</span> &#123;</span><br><span class="line">    request.<span class="title function_">respondWith</span>(&#123;</span><br><span class="line">      <span class="attr">status</span>: <span class="number">200</span>,</span><br><span class="line">      <span class="comment">// @ts-ignore</span></span><br><span class="line">      <span class="attr">response</span>: <span class="title function_">str2ab</span>(<span class="string">&#x27;Hello world&#x27;</span>)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">setTimeout</span>(<span class="function">() =&gt;</span> &#123;</span><br><span class="line">      <span class="title function_">expect</span>(response.<span class="property">data</span>.<span class="property">byteLength</span>).<span class="title function_">toBe</span>(<span class="number">22</span>)</span><br><span class="line">      <span class="title function_">done</span>()</span><br><span class="line">    &#125;, <span class="number">100</span>)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>另外我们发现 <code>core/xhr.ts</code> 文件的第 13 行：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">method = <span class="string">&#x27;get&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>分支没有测试完全。因为实际上代码执行到这的时候 <code>method</code> 是一定会有的，所以我们不必为其指定默认值，另外还需要在 <code>method!.toUpperCase()</code> 的时候使用非空断言。</p>
+<p>同时<code>core/xhr.ts</code> 文件的第 66 行：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> responseData = responseType !== <span class="string">&#x27;text&#x27;</span> ? request.<span class="property">response</span> : request.<span class="property">responseText</span></span><br></pre></td></tr></table></figure>
+
+<p>分支也没有测试完全。这里我们应该先判断存在 <code>responseType</code> 存在的情况下再去和 <code>text</code> 做对比，需要修改逻辑：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> responseData = responseType &amp;&amp; responseType !== <span class="string">&#x27;text&#x27;</span> ? request.<span class="property">response</span> : request.<span class="property">responseText</span></span><br></pre></td></tr></table></figure>
+
+<p>这样再次跑测试，就覆盖了所有的分支。</p>
+<p>到此为止，除了我们之前说的 <code>helpers/error.ts</code> 模块中对于 <code>super</code> 的测试的分支覆盖率没达到 100%，其它模块均达到 100% 的测试覆盖率。</p>
+<p>有些有强迫症的同学可能会觉得，能不能通过某种手段让它的覆盖率达到 100% 呢，这里其实有一个奇技淫巧，在 <code>helpers/error.ts</code> 文件的 <code>constructor</code> 函数上方加一个 <code>/* istanbul ignore next */</code> 注释，这样其实相当于忽略了整个构造函数的测试，这样我们就可以达到 100% 的覆盖率了。</p>
+<p><code>/* istanbul ignore next */</code> 在我们去阅读一些开源代码的时候经常会遇到，主要用途就是用来忽略测试用的，这个技巧不可滥用，除非你明确的知道这段代码不需要测试，否则你不应该使用它。滥用就失去了单元测试的意义了。</p>
+<p>至此，我们就完成了整个 <code>ts-axios</code> 库的测试了，我们也成功地让测试覆盖率达到目标 99% 以上。下一章我会教大家如果打包构建和发布我们的 <code>ts-axios</code> 库。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/10.%E5%89%A9%E4%BD%99%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" title="剩余模块单元测试">https://gaojiajie1993.github.io/blog/2020/01/05/《axios》学习/11.ts-axios 单元测试/10.剩余模块单元测试/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/axios/" rel="tag"># axios</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/" rel="prev" title="ts-axios 编译与发布">
+                  <i class="fa fa-chevron-left"></i> ts-axios 编译与发布
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/11.ts-axios%20%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/09.%E8%AF%B7%E6%B1%82%E5%8F%96%E6%B6%88%E6%A8%A1%E5%9D%97%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" rel="next" title="请求取消模块单元测试">
+                  请求取消模块单元测试 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">16:26</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"b80385f88c5a71dcb33cd8211a0cbb2c"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

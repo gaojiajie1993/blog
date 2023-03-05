@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="接口TypeScript 的核心原则之一是对值所具有的结构进行类型检查。它有时被称做“鸭式辨型法”或“结构性子类型化”。 在 TypeScript 里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="接口">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="接口TypeScript 的核心原则之一是对值所具有的结构进行类型检查。它有时被称做“鸭式辨型法”或“结构性子类型化”。 在 TypeScript 里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-05T02:17:47.000Z">
+<meta property="article:modified_time" content="2023-03-04T08:17:19.200Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="TypeScript">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3/","path":"2020/01/05/《TypeScript》学习/02.TypeScript 常用语法/03.接口/","title":"接口"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>接口 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">24</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">9</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">151</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.</span> <span class="nav-text">接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E5%88%9D%E6%8E%A2"><span class="nav-number">1.1.</span> <span class="nav-text">接口初探</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E9%80%89%E5%B1%9E%E6%80%A7"><span class="nav-number">1.2.</span> <span class="nav-text">可选属性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AA%E8%AF%BB%E5%B1%9E%E6%80%A7"><span class="nav-number">1.3.</span> <span class="nav-text">只读属性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#readonly-vs-const"><span class="nav-number">1.3.1.</span> <span class="nav-text">readonly vs const</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E5%B1%9E%E6%80%A7%E6%A3%80%E6%9F%A5"><span class="nav-number">1.4.</span> <span class="nav-text">额外的属性检查</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.5.</span> <span class="nav-text">函数类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E7%B4%A2%E5%BC%95%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.6.</span> <span class="nav-text">可索引的类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.7.</span> <span class="nav-text">类类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.7.1.</span> <span class="nav-text">实现接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E9%9D%99%E6%80%81%E9%83%A8%E5%88%86%E4%B8%8E%E5%AE%9E%E4%BE%8B%E9%83%A8%E5%88%86%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">1.7.2.</span> <span class="nav-text">类静态部分与实例部分的区别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.8.</span> <span class="nav-text">继承接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E7%B1%BB%E5%9E%8B"><span class="nav-number">1.9.</span> <span class="nav-text">混合类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E7%BB%A7%E6%89%BF%E7%B1%BB"><span class="nav-number">1.10.</span> <span class="nav-text">接口继承类</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">151</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">24</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="接口 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          接口<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-05 10:17:47" itemprop="dateCreated datePublished" datetime="2020-01-05T10:17:47+08:00">2020-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2023-03-04 16:17:19" itemprop="dateModified" datetime="2023-03-04T16:17:19+08:00">2023-03-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">《TypeScript》学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>10k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><p>TypeScript 的核心原则之一是对值所具有的结构进行类型检查。它有时被称做“鸭式辨型法”或“结构性子类型化”。 在 TypeScript 里，接口的作用就是为这些类型命名和为你的代码或第三方代码定义契约。</p>
+<span id="more"></span>
+<h2 id="接口初探"><a href="#接口初探" class="headerlink" title="接口初探"></a>接口初探</h2><p>下面通过一个简单示例来观察接口是如何工作的：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">printLabel</span>(<span class="params">labelledObj: &#123; label: <span class="built_in">string</span> &#125;</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(labelledObj.<span class="property">label</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myObj = &#123; <span class="attr">size</span>: <span class="number">10</span>, <span class="attr">label</span>: <span class="string">&#x27;Size 10 Object&#x27;</span> &#125;</span><br><span class="line"><span class="title function_">printLabel</span>(myObj)</span><br></pre></td></tr></table></figure>
+
+<p>类型检查器会查看 <code>printLabel</code> 的调用。<code>printLabel</code> 有一个参数，并要求这个对象参数有一个名为 <code>label</code> 类型为 <code>string</code> 的属性。 需要注意的是，我们传入的对象参数实际上会包含很多属性，但是编译器只会检查那些必需的属性是否存在，以及其类型是否匹配。 然而，有些时候 TypeScript  却并不会这么宽松，我们下面会稍做讲解。</p>
+<p>下面我们重写上面的例子，这次使用接口来描述：必须包含一个<code>label</code> 属性且类型为 <code>string</code>：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">LabelledValue</span> &#123;</span><br><span class="line">  <span class="attr">label</span>: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">printLabel</span>(<span class="params">labelledObj: LabelledValue</span>) &#123;</span><br><span class="line">  <span class="variable language_">console</span>.<span class="title function_">log</span>(labelledObj.<span class="property">label</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> myObj = &#123;<span class="attr">size</span>: <span class="number">10</span>, <span class="attr">label</span>: <span class="string">&#x27;Size 10 Object&#x27;</span>&#125;</span><br><span class="line"><span class="title function_">printLabel</span>(myObj)</span><br></pre></td></tr></table></figure>
+
+<p><code>LabelledValue</code> 接口就好比一个名字，用来描述上面例子里的结构。 它代表了有一个 <code>label</code> 属性且类型为<code>string</code> 的对象。 需要注意的是，我们在这里并不能像在其它语言里一样，说传给 <code>printLabel</code> 的对象实现了这个接口。我们只会去关注值的外形。 只要传入的对象满足上面提到的必要条件，那么它就是被允许的。</p>
+<p>还有一点值得提的是，类型检查器不会去检查属性的顺序，只要相应的属性存在并且类型也是对的就可以。</p>
+<h2 id="可选属性"><a href="#可选属性" class="headerlink" title="可选属性"></a>可选属性</h2><p>接口里的属性不全都是必需的。 有些是只在某些条件下存在，或者根本不存在。例如给函数传入的参数对象中只有部分属性赋值了。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Square</span> &#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="built_in">string</span>,</span><br><span class="line">  <span class="attr">area</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">SquareConfig</span> &#123;</span><br><span class="line">  color?: <span class="built_in">string</span></span><br><span class="line">  width?: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createSquare</span> (<span class="attr">config</span>: <span class="title class_">SquareConfig</span>): <span class="title class_">Square</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> newSquare = &#123;<span class="attr">color</span>: <span class="string">&#x27;white&#x27;</span>, <span class="attr">area</span>: <span class="number">100</span>&#125;</span><br><span class="line">  <span class="keyword">if</span> (config.<span class="property">color</span>) &#123;</span><br><span class="line">    newSquare.<span class="property">color</span> = config.<span class="property">color</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (config.<span class="property">width</span>) &#123;</span><br><span class="line">    newSquare.<span class="property">area</span> = config.<span class="property">width</span> * config.<span class="property">width</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newSquare</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(&#123;<span class="attr">color</span>: <span class="string">&#x27;black&#x27;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>带有可选属性的接口与普通的接口定义差不多，只是在可选属性名字定义的后面加一个 <code>?</code> 符号。</p>
+<p>可选属性的好处之一是可以对可能存在的属性进行预定义，好处之二是可以捕获引用了不存在的属性时的错误。 比如，我们故意将 <code>createSquare</code> 里的 <code>color</code> 属性名拼错，就会得到一个错误提示：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Square</span> &#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="built_in">string</span>,</span><br><span class="line">  <span class="attr">area</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">SquareConfig</span> &#123;</span><br><span class="line">   color?: <span class="built_in">string</span>;</span><br><span class="line">   width?: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createSquare</span>(<span class="params">config: SquareConfig</span>): <span class="title class_">Square</span> &#123;</span><br><span class="line">   <span class="keyword">let</span> newSquare = &#123;<span class="attr">color</span>: <span class="string">&#x27;white&#x27;</span>, <span class="attr">area</span>: <span class="number">100</span>&#125;</span><br><span class="line">   <span class="keyword">if</span> (config.<span class="property">clor</span>) &#123;</span><br><span class="line">     <span class="comment">// Error: 属性 &#x27;clor&#x27; 不存在于类型 &#x27;SquareConfig&#x27; 中</span></span><br><span class="line">     newSquare.<span class="property">color</span> = config.<span class="property">clor</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">if</span> (config.<span class="property">width</span>) &#123;</span><br><span class="line">     newSquare.<span class="property">area</span> = config.<span class="property">width</span> * config.<span class="property">width</span></span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> newSquare</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(&#123;<span class="attr">color</span>: <span class="string">&#x27;black&#x27;</span>&#125;)</span><br></pre></td></tr></table></figure>
+
+<h2 id="只读属性"><a href="#只读属性" class="headerlink" title="只读属性"></a>只读属性</h2><p>一些对象属性只能在对象刚刚创建的时候修改其值。 你可以在属性名前用 <code>readonly</code> 来指定只读属性:</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Point</span> &#123;</span><br><span class="line">  <span class="keyword">readonly</span> <span class="attr">x</span>: <span class="built_in">number</span></span><br><span class="line">  <span class="keyword">readonly</span> <span class="attr">y</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你可以通过赋值一个对象字面量来构造一个 <code>Point</code>。 赋值后，<code>x</code> 和 <code>y</code> 再也不能被改变了。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="attr">p1</span>: <span class="title class_">Point</span> = &#123; <span class="attr">x</span>: <span class="number">10</span>, <span class="attr">y</span>: <span class="number">20</span> &#125;</span><br><span class="line">p1.<span class="property">x</span> = <span class="number">5</span> <span class="comment">// error!</span></span><br></pre></td></tr></table></figure>
+
+<p>TypeScript 具有 <code>ReadonlyArray&lt;T&gt;</code> 类型，它与 <code>Array&lt;T&gt;</code> 相似，只是把所有可变方法去掉了，因此可以确保数组创建后再也不能被修改：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="attr">a</span>: <span class="built_in">number</span>[] = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span><br><span class="line"><span class="keyword">let</span> <span class="attr">ro</span>: <span class="title class_">ReadonlyArray</span>&lt;<span class="built_in">number</span>&gt; = a</span><br><span class="line">ro[<span class="number">0</span>] = <span class="number">12</span> <span class="comment">// error!</span></span><br><span class="line">ro.<span class="title function_">push</span>(<span class="number">5</span>) <span class="comment">// error!</span></span><br><span class="line">ro.<span class="property">length</span> = <span class="number">100</span> <span class="comment">// error!</span></span><br><span class="line">a = ro <span class="comment">// error!</span></span><br></pre></td></tr></table></figure>
+
+<p>上面代码的最后一行，可以看到就算把整个 <code>ReadonlyArray</code> 赋值到一个普通数组也是不可以的。 但是你可以用类型断言重写：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a = ro <span class="keyword">as</span> <span class="built_in">number</span>[]</span><br></pre></td></tr></table></figure>
+
+<h3 id="readonly-vs-const"><a href="#readonly-vs-const" class="headerlink" title="readonly vs const"></a>readonly vs const</h3><p>最简单判断该用 <code>readonly</code> 还是 <code>const</code> 的方法是看要把它做为变量使用还是做为一个属性。 做为变量使用的话用 <code>const</code>，若做为属性则使用 <code>readonly</code>。</p>
+<h2 id="额外的属性检查"><a href="#额外的属性检查" class="headerlink" title="额外的属性检查"></a>额外的属性检查</h2><p>我们在第一个例子里使用了接口，TypeScript 让我们传入 <code>&#123; size: number; label: string; &#125;</code> 到仅期望得到 <code>&#123; label: string; &#125;</code> 的函数里, 并且我们已经学过了可选属性。</p>
+<p>然而，天真地将这两者结合的话就会像在 JavaScript 里那样搬起石头砸自己的脚。 比如，拿 <code>createSquare</code> 例子来说：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">SquareConfig</span> &#123;</span><br><span class="line">    color?: <span class="built_in">string</span>;</span><br><span class="line">    width?: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createSquare</span> (<span class="attr">config</span>: <span class="title class_">SquareConfig</span>): &#123; <span class="attr">color</span>: <span class="built_in">string</span>; <span class="attr">area</span>: <span class="built_in">number</span> &#125; &#123;</span><br><span class="line">  <span class="keyword">let</span> newSquare = &#123;<span class="attr">color</span>: <span class="string">&#x27;white&#x27;</span>, <span class="attr">area</span>: <span class="number">100</span>&#125;</span><br><span class="line">  <span class="keyword">if</span> (config.<span class="property">color</span>) &#123;</span><br><span class="line">    newSquare.<span class="property">color</span> = config.<span class="property">color</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (config.<span class="property">width</span>) &#123;</span><br><span class="line">    newSquare.<span class="property">area</span> = config.<span class="property">width</span> * config.<span class="property">width</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newSquare</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(&#123; <span class="attr">colour</span>: <span class="string">&#x27;red&#x27;</span>, <span class="attr">width</span>: <span class="number">100</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>注意传入 <code>createSquare</code> 的参数拼写为 <code>colour</code> 而不是 <code>color</code>。 在 JavaScript 里，这会默默地失败。</p>
+<p>你可能会争辩这个程序已经正确地类型化了，因为 <code>width</code> 属性是兼容的，不存在 <code>color</code> 属性，而且额外的 <code>colour</code> 属性是无意义的。</p>
+<p>然而，TypeScript 会认为这段代码可能存在 bug。 对象字面量会被特殊对待而且会经过额外属性检查，当将它们赋值给变量或作为参数传递的时候。 如果一个对象字面量存在任何“目标类型”不包含的属性时，你会得到一个错误。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// error: &#x27;colour&#x27; 不存在于类型 &#x27;SquareConfig&#x27; 中</span></span><br><span class="line"><span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(&#123; <span class="attr">colour</span>: <span class="string">&#x27;red&#x27;</span>, <span class="attr">width</span>: <span class="number">100</span> &#125;)</span><br></pre></td></tr></table></figure>
+
+<p>绕开这些检查非常简单。 最简便的方法是使用类型断言：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(&#123; <span class="attr">width</span>: <span class="number">100</span>, <span class="attr">opacity</span>: <span class="number">0.5</span> &#125; <span class="keyword">as</span> <span class="title class_">SquareConfig</span>)</span><br></pre></td></tr></table></figure>
+
+<p>然而，最佳的方式是能够添加一个字符串索引签名，前提是你能够确定这个对象可能具有某些做为特殊用途使用的额外属性。 如果 <code>SquareConfig</code> 带有上面定义的类型的 <code>color</code> 和 <code>width</code> 属性，并且还会带有任意数量的其它属性，那么我们可以这样定义它：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">SquareConfig</span> &#123;</span><br><span class="line">  color?: <span class="built_in">string</span></span><br><span class="line">  width?: <span class="built_in">number</span></span><br><span class="line">  [<span class="attr">propName</span>: <span class="built_in">string</span>]: <span class="built_in">any</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们稍后会讲到索引签名，但在这我们要表示的是<code>SquareConfig</code> 可以有任意数量的属性，并且只要它们不是 <code>color</code> 和 <code>width</code>，那么就无所谓它们的类型是什么。</p>
+<p>还有最后一种跳过这些检查的方式，这可能会让你感到惊讶，它就是将这个对象赋值给一个另一个变量： 因为 <code>squareOptions</code> 不会经过额外属性检查，所以编译器不会报错。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> squareOptions = &#123; <span class="attr">colour</span>: <span class="string">&#x27;red&#x27;</span>, <span class="attr">width</span>: <span class="number">100</span> &#125;</span><br><span class="line"><span class="keyword">let</span> mySquare = <span class="title function_">createSquare</span>(squareOptions)</span><br></pre></td></tr></table></figure>
+
+<p>要留意，在像上面一样的简单代码里，你可能不应该去绕开这些检查。 对于包含方法和内部状态的复杂对象字面量来讲，你可能需要使用这些技巧，但是大多数额外属性检查错误是真正的bug。也就是说你遇到了额外类型检查出的错误，你应该去审查一下你的类型声明。 在这里，如果支持传入 <code>color</code> 或 <code>colour</code> 属性到 <code>createSquare</code>，你应该修改 <code>SquareConfig</code> 定义来体现出这一点。</p>
+<h2 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h2><p>接口能够描述 JavaScript 中对象拥有的各种各样的外形。 除了描述带有属性的普通对象外，接口也可以描述函数类型。</p>
+<p>为了使用接口表示函数类型，我们需要给接口定义一个调用签名。它就像是一个只有参数列表和返回值类型的函数定义。参数列表里的每个参数都需要名字和类型。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">SearchFunc</span> &#123;</span><br><span class="line">  (<span class="attr">source</span>: <span class="built_in">string</span>, <span class="attr">subString</span>: <span class="built_in">string</span>): <span class="built_in">boolean</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样定义后，我们可以像使用其它接口一样使用这个函数类型的接口。 下例展示了如何创建一个函数类型的变量，并将一个同类型的函数赋值给这个变量。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="attr">mySearch</span>: <span class="title class_">SearchFunc</span></span><br><span class="line">mySearch = <span class="keyword">function</span>(<span class="params">source: <span class="built_in">string</span>, subString: <span class="built_in">string</span></span>): <span class="built_in">boolean</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> result = source.<span class="title function_">search</span>(subString);</span><br><span class="line">  <span class="keyword">return</span> result &gt; -<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于函数类型的类型检查来说，函数的参数名不需要与接口里定义的名字相匹配。 比如，我们使用下面的代码重写上面的例子：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="attr">mySearch</span>: <span class="title class_">SearchFunc</span></span><br><span class="line">mySearch = <span class="keyword">function</span>(<span class="params">src: <span class="built_in">string</span>, sub: <span class="built_in">string</span></span>): <span class="built_in">boolean</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> result = src.<span class="title function_">search</span>(sub);</span><br><span class="line">  <span class="keyword">return</span> result &gt; -<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>函数的参数会逐个进行检查，要求对应位置上的参数类型是兼容的。 如果你不想指定类型，TypeScript 的类型系统会推断出参数类型，因为函数直接赋值给了  <code>SearchFunc</code> 类型变量。 函数的返回值类型是通过其返回值推断出来的（此例是 <code>false</code> 和 <code>true</code>）。 如果让这个函数返回数字或字符串，类型检查器会警告我们函数的返回值类型与 <code>SearchFunc</code> 接口中的定义不匹配。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> <span class="attr">mySearch</span>: <span class="title class_">SearchFunc</span></span><br><span class="line">mySearch = <span class="keyword">function</span>(<span class="params">src, sub</span>) &#123;</span><br><span class="line">  <span class="keyword">let</span> result = src.<span class="title function_">search</span>(sub)</span><br><span class="line">  <span class="keyword">return</span> result &gt; -<span class="number">1</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="可索引的类型"><a href="#可索引的类型" class="headerlink" title="可索引的类型"></a>可索引的类型</h2><p>与使用接口描述函数类型差不多，我们也可以描述那些能够“通过索引得到”的类型，比如 <code>a[10]</code> 或 <code>ageMap[&#39;daniel&#39;]</code>。 可索引类型具有一个 索引签名，它描述了对象索引的类型，还有相应的索引返回值类型。 让我们看一个例子：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">StringArray</span> &#123;</span><br><span class="line">  [<span class="attr">index</span>: <span class="built_in">number</span>]: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="attr">myArray</span>: <span class="title class_">StringArray</span></span><br><span class="line">myArray = [<span class="string">&#x27;Bob&#x27;</span>, <span class="string">&#x27;Fred&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="attr">myStr</span>: <span class="built_in">string</span> = myArray[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<p>上面例子里，我们定义了 <code>StringArray</code> 接口，它具有索引签名。 这个索引签名表示了当用 <code>number</code> 去索引 <code>StringArray</code> 时会得到 <code>string</code> 类型的返回值。</p>
+<p>TypeScript 支持两种索引签名：字符串和数字。 可以同时使用两种类型的索引，但是数字索引的返回值必须是字符串索引返回值类型的子类型。 这是因为当使用 <code>number</code> 来索引时，JavaScript 会将它转换成<code>string</code> 然后再去索引对象。 也就是说用 <code>100</code>（一个 <code>number</code>）去索引等同于使用<code>&#39;100&#39;</code>（一个 <code>string</code> ）去索引，因此两者需要保持一致。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Animal</span> &#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Dog</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Animal</span> &#123;</span><br><span class="line">  <span class="attr">breed</span>: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误：使用数值型的字符串索引，有时会得到完全不同的Animal!</span></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">NotOkay</span> &#123;</span><br><span class="line">  [<span class="attr">x</span>: <span class="built_in">number</span>]: <span class="title class_">Animal</span></span><br><span class="line">  [<span class="attr">x</span>: <span class="built_in">string</span>]: <span class="title class_">Dog</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字符串索引签名能够很好的描述 <code>dictionary</code> 模式，并且它们也会确保所有属性与其返回值类型相匹配。 因为字符串索引声明了 <code>obj.property</code> 和 <code>obj[&#39;property&#39;]</code> 两种形式都可以。 下面的例子里， <code>name</code> 的类型与字符串索引类型不匹配，所以类型检查器给出一个错误提示：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">NumberDictionary</span> &#123;</span><br><span class="line">  [<span class="attr">index</span>: <span class="built_in">string</span>]: <span class="built_in">number</span>;</span><br><span class="line">  <span class="attr">length</span>: <span class="built_in">number</span>;    <span class="comment">// 可以，length是number类型</span></span><br><span class="line">  <span class="attr">name</span>: <span class="built_in">string</span>       <span class="comment">// 错误，`name`的类型与索引类型返回值的类型不匹配</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后，你可以将索引签名设置为只读，这样就防止了给索引赋值：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ReadonlyStringArray</span> &#123;</span><br><span class="line">  <span class="keyword">readonly</span> [<span class="attr">index</span>: <span class="built_in">number</span>]: <span class="built_in">string</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> <span class="attr">myArray</span>: <span class="title class_">ReadonlyStringArray</span> = [<span class="string">&#x27;Alice&#x27;</span>, <span class="string">&#x27;Bob&#x27;</span>];</span><br><span class="line">myArray[<span class="number">2</span>] = <span class="string">&#x27;Mallory&#x27;</span>; <span class="comment">// error!</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="类类型"><a href="#类类型" class="headerlink" title="类类型"></a>类类型</h2><h3 id="实现接口"><a href="#实现接口" class="headerlink" title="实现接口"></a>实现接口</h3><p>与 C# 或 Java 里接口的基本作用一样，TypeScript 也能够用它来明确的强制一个类去符合某种契约。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="attr">currentTime</span>: <span class="title class_">Date</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Clock</span> <span class="keyword">implements</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="attr">currentTime</span>: <span class="title class_">Date</span></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">h: <span class="built_in">number</span>, m: <span class="built_in">number</span></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你也可以在接口中描述一个方法，在类里实现它，如同下面的 <code>setTime</code> 方法一样：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="attr">currentTime</span>: <span class="title class_">Date</span></span><br><span class="line">  <span class="title function_">setTime</span>(<span class="attr">d</span>: <span class="title class_">Date</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Clock</span> <span class="keyword">implements</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="attr">currentTime</span>: <span class="title class_">Date</span></span><br><span class="line">  <span class="title function_">setTime</span>(<span class="params">d: <span class="built_in">Date</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">currentTime</span> = d</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">h: <span class="built_in">number</span>, m: <span class="built_in">number</span></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接口描述了类的公共部分，而不是公共和私有两部分。 它不会帮你检查类是否具有某些私有成员。</p>
+<h3 id="类静态部分与实例部分的区别"><a href="#类静态部分与实例部分的区别" class="headerlink" title="类静态部分与实例部分的区别"></a>类静态部分与实例部分的区别</h3><p>当你操作类和接口的时候，你要知道类是具有两个类型的：静态部分的类型和实例的类型。 你会注意到，当你用构造器签名去定义一个接口并试图定义一个类去实现这个接口时会得到一个错误：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ClockConstructor</span> &#123;</span><br><span class="line">  <span class="keyword">new</span> (<span class="attr">hour</span>: <span class="built_in">number</span>, <span class="attr">minute</span>: <span class="built_in">number</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// error</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Clock</span> <span class="keyword">implements</span> <span class="title class_">ClockConstructor</span> &#123;</span><br><span class="line">  <span class="attr">currentTime</span>: <span class="title class_">Date</span></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">h: <span class="built_in">number</span>, m: <span class="built_in">number</span></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里因为当一个类实现了一个接口时，只对其实例部分进行类型检查。<code>constructor</code> 存在于类的静态部分，所以不在检查的范围内。</p>
+<p>看下面的例子，我们定义了两个接口，  <code>ClockConstructor</code> 为构造函数所用和 <code>ClockInterface</code> 为实例方法所用。 为了方便我们定义一个构造函数 <code>createClock</code>，它用传入的类型创建实例。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">ClockConstructor</span> &#123;</span><br><span class="line">  <span class="keyword">new</span> (<span class="attr">hour</span>: <span class="built_in">number</span>, <span class="attr">minute</span>: <span class="built_in">number</span>): <span class="title class_">ClockInterface</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="title function_">tick</span>()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">createClock</span>(<span class="params">ctor: ClockConstructor, hour: <span class="built_in">number</span>, minute: <span class="built_in">number</span></span>): <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="title function_">ctor</span>(hour, minute)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">DigitalClock</span> <span class="keyword">implements</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">h: <span class="built_in">number</span>, m: <span class="built_in">number</span></span>) &#123; &#125;</span><br><span class="line">  <span class="title function_">tick</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;beep beep&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">AnalogClock</span> <span class="keyword">implements</span> <span class="title class_">ClockInterface</span> &#123;</span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params">h: <span class="built_in">number</span>, m: <span class="built_in">number</span></span>) &#123; &#125;</span><br><span class="line">  <span class="title function_">tick</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;tick tock&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> digital = <span class="title function_">createClock</span>(<span class="title class_">DigitalClock</span>, <span class="number">12</span>, <span class="number">17</span>)</span><br><span class="line"><span class="keyword">let</span> analog = <span class="title function_">createClock</span>(<span class="title class_">AnalogClock</span>, <span class="number">7</span>, <span class="number">32</span>)</span><br></pre></td></tr></table></figure>
+
+<p>因为 <code>createClock</code> 的第一个参数是 <code>ClockConstructor</code> 类型，在 <code>createClock(AnalogClock, 7, 32)</code> 里，会检查 <code>AnalogClock</code> 是否符合构造函数签名。</p>
+<h2 id="继承接口"><a href="#继承接口" class="headerlink" title="继承接口"></a>继承接口</h2><p>和类一样，接口也可以相互继承。 这让我们能够从一个接口里复制成员到另一个接口里，可以更灵活地将接口分割到可重用的模块里。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Shape</span> &#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">Square</span> <span class="keyword">extends</span> <span class="title class_">Shape</span> &#123;</span><br><span class="line">  <span class="attr">sideLength</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> square = &#123;&#125; <span class="keyword">as</span> <span class="title class_">Square</span></span><br><span class="line">square.<span class="property">color</span> = <span class="string">&#x27;blue&#x27;</span></span><br><span class="line">square.<span class="property">sideLength</span> = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+
+<p>一个接口可以继承多个接口，创建出多个接口的合成接口。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Shape</span> &#123;</span><br><span class="line">  <span class="attr">color</span>: <span class="built_in">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">PenStroke</span> &#123;</span><br><span class="line">  <span class="attr">penWidth</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">Square</span> <span class="keyword">extends</span> <span class="title class_">Shape</span>, <span class="title class_">PenStroke</span> &#123;</span><br><span class="line">  <span class="attr">sideLength</span>: <span class="built_in">number</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> square = &#123;&#125; <span class="keyword">as</span> <span class="title class_">Square</span></span><br><span class="line">square.<span class="property">color</span> = <span class="string">&#x27;blue&#x27;</span></span><br><span class="line">square.<span class="property">sideLength</span> = <span class="number">10</span></span><br><span class="line">square.<span class="property">penWidth</span> = <span class="number">5.0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="混合类型"><a href="#混合类型" class="headerlink" title="混合类型"></a>混合类型</h2><p>先前我们提过，接口能够描述 JavaScript 里丰富的类型。 因为 JavaScript 其动态灵活的特点，有时你会希望一个对象可以同时具有上面提到的多种类型。</p>
+<p>一个例子就是，一个对象可以同时做为函数和对象使用，并带有额外的属性。</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> <span class="title class_">Counter</span> &#123;</span><br><span class="line">  (<span class="attr">start</span>: <span class="built_in">number</span>): <span class="built_in">string</span></span><br><span class="line">  <span class="attr">interval</span>: <span class="built_in">number</span></span><br><span class="line">  <span class="title function_">reset</span>(): <span class="built_in">void</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getCounter</span>(<span class="params"></span>): <span class="title class_">Counter</span> &#123;</span><br><span class="line">  <span class="keyword">let</span> counter = (<span class="keyword">function</span> (<span class="params">start: <span class="built_in">number</span></span>) &#123; &#125;) <span class="keyword">as</span> <span class="title class_">Counter</span></span><br><span class="line">  counter.<span class="property">interval</span> = <span class="number">123</span></span><br><span class="line">  counter.<span class="property">reset</span> = <span class="keyword">function</span> (<span class="params"></span>) &#123; &#125;</span><br><span class="line">  <span class="keyword">return</span> counter</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> c = <span class="title function_">getCounter</span>()</span><br><span class="line"><span class="title function_">c</span>(<span class="number">10</span>)</span><br><span class="line">c.<span class="title function_">reset</span>()</span><br><span class="line">c.<span class="property">interval</span> = <span class="number">5.0</span></span><br></pre></td></tr></table></figure>
+
+<p>在使用 JavaScript 第三方库的时候，你可能需要像上面那样去完整地定义类型。这门课要重构的 <code>axios</code> 库就是一个很好的例子。</p>
+<h2 id="接口继承类"><a href="#接口继承类" class="headerlink" title="接口继承类"></a>接口继承类</h2><p>当接口继承了一个类类型时，它会继承类的成员但不包括其实现。 就好像接口声明了所有类中存在的成员，但并没有提供具体实现一样。 接口同样会继承到类的 <code>private</code> 和 <code>protected</code> 成员。 这意味着当你创建了一个接口继承了一个拥有私有或受保护的成员的类时，这个接口类型只能被这个类或其子类所实现（implement）。</p>
+<p>当你有一个庞大的继承结构时这很有用，但要指出的是你的代码只在子类拥有特定属性时起作用。 这个子类除了继承至基类外与基类没有任何关系。例：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Control</span> &#123;</span><br><span class="line">  <span class="keyword">private</span> <span class="attr">state</span>: <span class="built_in">any</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">interface</span> <span class="title class_">SelectableControl</span> <span class="keyword">extends</span> <span class="title class_">Control</span> &#123;</span><br><span class="line">  <span class="title function_">select</span>(): <span class="built_in">void</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Button</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Control</span> <span class="keyword">implements</span> <span class="title class_">SelectableControl</span> &#123;</span><br><span class="line">  <span class="title function_">select</span>(<span class="params"></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TextBox</span> <span class="keyword">extends</span> <span class="title class_ inherited__">Control</span> &#123;</span><br><span class="line">  <span class="title function_">select</span>(<span class="params"></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Error：“ImageC”类型缺少“state”属性。</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">ImageC</span> <span class="keyword">implements</span> <span class="title class_">SelectableControl</span> &#123;</span><br><span class="line">  <span class="title function_">select</span>(<span class="params"></span>) &#123; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子里，<code>SelectableControl</code> 包含了 <code>Control</code> 的所有成员，包括私有成员 <code>state</code>。 因为 <code>state</code> 是私有成员，所以只能够是 <code>Control</code> 的子类们才能实现 <code>SelectableControl</code> 接口。 因为只有 <code>Control</code> 的子类才能够拥有一个声明于<code>Control</code> 的私有成员 <code>state</code>，这对私有成员的兼容性是必需的。</p>
+<p>在 <code>Control</code> 类内部，是允许通过 <code>SelectableControl</code> 的实例来访问私有成员 <code>state</code> 的。 实际上，<code>SelectableControl</code> 接口和拥有 <code>select</code> 方法的 <code>Control</code> 类是一样的。<code>Button</code>和 <code>TextBox</code> 类是 <code>SelectableControl</code> 的子类（因为它们都继承自<code>Control</code> 并有 <code>select</code> 方法），但 <code>ImageC</code> 类并不是这样的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/03.%E6%8E%A5%E5%8F%A3/" title="接口">https://gaojiajie1993.github.io/blog/2020/01/05/《TypeScript》学习/02.TypeScript 常用语法/03.接口/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/TypeScript/" rel="tag"># TypeScript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/04.%E7%B1%BB/" rel="prev" title="类">
+                  <i class="fa fa-chevron-left"></i> 类
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8ATypeScript%E3%80%8B%E5%AD%A6%E4%B9%A0/02.TypeScript%20%E5%B8%B8%E7%94%A8%E8%AF%AD%E6%B3%95/02.%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E/" rel="next" title="变量声明">
+                  变量声明 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">16:26</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"3443de96297762811fcda64250086a4f"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
