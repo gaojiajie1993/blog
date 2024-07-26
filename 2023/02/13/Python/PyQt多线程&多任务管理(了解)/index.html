@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="多线程&amp;多任务介绍多线程&amp;多任务通常是指将一个任务或多个任务运行在子线程，并且子线程可以独立启动，或通过线程池启动。子线程通常用于执行以下类型的任务：  长时间运行的任务：子线程适合处理那些耗时较长的任务，以避免阻塞主线程的执行。例如，进行复杂的计算、图像处理、视频编解码等任务可以放在子线程中执行，以保持应用程序的响应性。  阻塞型任务：如果有一些阻塞型的操作，可能会导致主线程被阻">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PyQt多线程&amp;多任务管理(了解)">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3)/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="多线程&amp;多任务介绍多线程&amp;多任务通常是指将一个任务或多个任务运行在子线程，并且子线程可以独立启动，或通过线程池启动。子线程通常用于执行以下类型的任务：  长时间运行的任务：子线程适合处理那些耗时较长的任务，以避免阻塞主线程的执行。例如，进行复杂的计算、图像处理、视频编解码等任务可以放在子线程中执行，以保持应用程序的响应性。  阻塞型任务：如果有一些阻塞型的操作，可能会导致主线程被阻">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-02-13T05:26:20.000Z">
+<meta property="article:modified_time" content="2024-07-26T05:00:20.578Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="PyQt">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3)/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3)/","path":"2023/02/13/Python/PyQt多线程&多任务管理(了解)/","title":"PyQt多线程&多任务管理(了解)"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>PyQt多线程&多任务管理(了解) | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B-amp-%E5%A4%9A%E4%BB%BB%E5%8A%A1%E4%BB%8B%E7%BB%8D"><span class="nav-number">1.</span> <span class="nav-text">多线程&amp;多任务介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">多线程管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E4%BE%9D%E8%B5%96"><span class="nav-number">2.1.</span> <span class="nav-text">拷贝依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">多任务管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E4%BE%9D%E8%B5%96-1"><span class="nav-number">3.1.</span> <span class="nav-text">拷贝依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">3.2.</span> <span class="nav-text">使用示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text"></span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="PyQt多线程&多任务管理(了解) | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          PyQt多线程&多任务管理(了解)<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3).md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-13 13:26:20" itemprop="dateCreated datePublished" datetime="2023-02-13T13:26:20+08:00">2023-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 13:00:20" itemprop="dateModified" datetime="2024-07-26T13:00:20+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>9 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="多线程-amp-多任务介绍"><a href="#多线程-amp-多任务介绍" class="headerlink" title="多线程&amp;多任务介绍"></a>多线程&amp;多任务介绍</h2><p>多线程&amp;多任务通常是指将一个任务或多个任务运行在子线程，并且子线程可以独立启动，或通过线程池启动。子线程通常用于执行以下类型的任务：</p>
+<ul>
+<li><p><strong>长时间运行的任务</strong>：子线程适合处理那些耗时较长的任务，以避免阻塞主线程的执行。例如，进行复杂的计算、图像处理、视频编解码等任务可以放在子线程中执行，以保持应用程序的响应性。</p>
+</li>
+<li><p><strong>阻塞型任务</strong>：如果有一些阻塞型的操作，可能会导致主线程被阻塞，例如进行网络请求、文件读写、数据库查询等。将这些任务放在子线程中执行可以确保主线程的流畅运行，同时避免应用程序的无响应状态。</p>
+</li>
+<li><p><strong>并行处理任务</strong>：如果有多个独立的任务需要同时执行，可以将它们分配给多个子线程来实现并行处理。例如，批量下载多个文件、同时进行多个数据处理任务等。</p>
+</li>
+<li><p><strong>异步操作</strong>：子线程可以用于执行异步操作，例如在后台处理数据、定时任务、监听外部设备的输入等。这样可以保持应用程序的其他部分正常运行，同时处理异步任务。</p>
+</li>
+</ul>
+<p>需要注意的是，使用子线程需要谨慎处理线程间的数据共享和同步问题，以避免出现竞态条件或其他并发问题。在 PyQt 中，可以使用线程间通信机制（如信号槽机制）来安全地传递数据和操作UI元素。</p>
+<h2 id="多线程管理"><a href="#多线程管理" class="headerlink" title="多线程管理"></a>多线程管理</h2><p>通常线程有两种启动方式，分别对应不同的使用场景：</p>
+<ul>
+<li><strong>将任务直接运行在一个独立的线程里</strong></li>
+</ul>
+<p>用于执行一次性长期任务（例如：并行任务，多线程下载），长期循环阻塞式接收任务（例如：接收蓝牙、网络、串口消息）</p>
+<ul>
+<li><strong>将任务运行在一个线程池的线程里</strong></li>
+</ul>
+<p>用于执行频繁触发型短期任务，避免线程资源浪费（例如：数据库操作、文件写入、网络数据下载），因为线程池可以重复利用其内部维护的N个线程，按需创建，减少资源的申请与释放操作。</p>
+<h3 id="拷贝依赖"><a href="#拷贝依赖" class="headerlink" title="拷贝依赖"></a>拷贝依赖</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">线程管理器，用于管理线程的创建、启动、停止等。</span></span><br><span class="line"><span class="string">包含两种线程启动方式：</span></span><br><span class="line"><span class="string">1. start 运行一个独立线程，用于执行一次性短期任务（例如：并行任务，多线程下载）、长期循环接收任务（例如：阻塞式接收蓝牙、串口消息）</span></span><br><span class="line"><span class="string">2. start_in_thread_pool 在一个线程池里运行任务，用于执行非定期触发型短期任务，避免线程资源浪费（例如：数据库操作、文件写入、网络数据下载）</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">其中包含了一个 Worker 类</span></span><br><span class="line"><span class="string">	● Worker 类用于创建线程任务</span></span><br><span class="line"><span class="string">Worker 类继承自 QRunnable 类，用于创建线程任务。</span></span><br><span class="line"><span class="string">    ● 其中包含了一个 run 方法，用于执行线程任务</span></span><br><span class="line"><span class="string">    ● 一个 signal_connect 方法，用于连接信号槽</span></span><br><span class="line"><span class="string">    ● 一个 stop 方法，用于停止线程任务</span></span><br><span class="line"><span class="string">    ● 一个 emit_msg 方法，用于发送消息。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">import</span> inspect</span><br><span class="line"><span class="keyword">from</span> typing <span class="keyword">import</span> <span class="type">Callable</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> pyqtSignal, QObject, QRunnable, QThread, QThreadPool</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">WorkerSignals</span>(<span class="title class_ inherited__">QObject</span>):</span><br><span class="line">    signal_finished = pyqtSignal()</span><br><span class="line">    signal_error = pyqtSignal(Exception)</span><br><span class="line">    signal_result = pyqtSignal(<span class="built_in">object</span>)</span><br><span class="line">    signal_msg = pyqtSignal(<span class="built_in">object</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Worker</span>(<span class="title class_ inherited__">QRunnable</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, target: <span class="type">Callable</span>, args=<span class="literal">None</span>, kwargs=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.setAutoDelete(<span class="literal">True</span>)  <span class="comment"># 自动删除，避免内存泄漏</span></span><br><span class="line">        self.__func = target</span><br><span class="line">        self.__args = args <span class="keyword">if</span> args <span class="keyword">else</span> ()</span><br><span class="line">        self.__kwargs = kwargs <span class="keyword">if</span> kwargs <span class="keyword">else</span> &#123;&#125;</span><br><span class="line">        self.__signals = WorkerSignals()</span><br><span class="line">        self.is_running = <span class="literal">False</span></span><br><span class="line">        self.worker_thread: WorkerThread = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        self.is_running = <span class="literal">True</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 如果func的第一个参数是Worker类型，则将self作为第一个参数传入</span></span><br><span class="line">            <span class="keyword">if</span> self.__is_worker_func(self.__func):</span><br><span class="line">                result = self.__func(self, *self.__args, **self.__kwargs)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># 否则，直接传入参数</span></span><br><span class="line">                result = self.__func(*self.__args, **self.__kwargs)</span><br><span class="line">            self.__signals.signal_result.emit(result)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            self.__signals.signal_error.emit(e)</span><br><span class="line">        <span class="keyword">finally</span>:</span><br><span class="line">            self.is_running = <span class="literal">False</span></span><br><span class="line">            self.__signals.signal_finished.emit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">signal_connect</span>(<span class="params">self, msg_handler=<span class="literal">None</span>, result_handler=<span class="literal">None</span>, finished_handler=<span class="literal">None</span>, error_handler=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="keyword">if</span> msg_handler:</span><br><span class="line">            self.__signals.signal_msg.connect(msg_handler)</span><br><span class="line">        <span class="keyword">if</span> result_handler:</span><br><span class="line">            self.__signals.signal_result.connect(result_handler)</span><br><span class="line">        <span class="keyword">if</span> finished_handler:</span><br><span class="line">            self.__signals.signal_finished.connect(finished_handler)</span><br><span class="line">        <span class="keyword">if</span> error_handler:</span><br><span class="line">            self.__signals.signal_error.connect(error_handler)</span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop</span>(<span class="params">self</span>):</span><br><span class="line">        self.is_running = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">emit_msg</span>(<span class="params">self, msg</span>):</span><br><span class="line">        self.__signals.signal_msg.emit(msg)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">start</span>(<span class="params">self, daemon=<span class="literal">True</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        1. 运行一个独立线程，用于执行一次性短期任务（例如：并行任务，多线程下载）、长期循环接收任务（例如：阻塞式接收蓝牙、串口消息）</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        self.worker_thread = WorkerThread(self)</span><br><span class="line">        self.worker_thread.daemon = daemon</span><br><span class="line">        self.worker_thread.start()</span><br><span class="line">        <span class="keyword">return</span> self.worker_thread</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">start_in_thread_pool</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        2. 在一个线程池里运行任务，用于执行非定期的短期任务，避免线程资源浪费（例如：文件写出、网络数据下载）</span></span><br><span class="line"><span class="string">        :param refresh_worker: 任务</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        QThreadPool.globalInstance().start(self)</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__is_worker_func</span>(<span class="params">cls, func: <span class="type">Callable</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        判断一个函数是否是worker函数，worker函数的第一个参数必须是Worker类型</span></span><br><span class="line"><span class="string">        :param func:</span></span><br><span class="line"><span class="string">        :return:</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span></span><br><span class="line">        sig = inspect.signature(func)</span><br><span class="line">        <span class="comment"># 判断第一个参数是否是Worker类型，或者参数名是否是worker</span></span><br><span class="line">        param_keys = <span class="built_in">list</span>(sig.parameters.keys())</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(param_keys) &gt; <span class="number">0</span>:</span><br><span class="line">            first_param = sig.parameters[param_keys[<span class="number">0</span>]]</span><br><span class="line">            <span class="keyword">if</span> first_param.annotation == Worker:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">if</span> first_param.name == <span class="string">&quot;worker&quot;</span>:</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">WorkerThread</span>(<span class="title class_ inherited__">QThread</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, worker: Worker</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        self.__worker = worker</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        self.__worker.run()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h3><p>以下代码分别显示了如下两个应用场景：</p>
+<ul>
+<li>使用方式1：单线程循环接收消息示例</li>
+<li>使用方式2：利用线程池异步执行多个独立任务示例<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用示例</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> pyqtSlot</span><br><span class="line"><span class="keyword">from</span> PyQt5.QtWidgets <span class="keyword">import</span> QApplication</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> qt_worker <span class="keyword">import</span> Worker</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">long_time_recv_task</span>(<span class="params">worker: Worker, title, start</span>):</span><br><span class="line">    counter = start</span><br><span class="line">    thread_name = threading.currentThread().name</span><br><span class="line">    <span class="keyword">while</span> worker.is_running:</span><br><span class="line">        <span class="comment"># 模拟阻塞（等待网络、串口、蓝牙等）</span></span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">        <span class="comment"># 模拟收到消息</span></span><br><span class="line">        worker.emit_msg(<span class="string">f&quot;<span class="subst">&#123;title&#125;</span> long time task <span class="subst">&#123;counter&#125;</span> : <span class="subst">&#123;thread_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">        counter += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> counter &gt;= <span class="number">110</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;refresh_worker done: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(counter)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@pyqtSlot(<span class="params"><span class="built_in">object</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_result_received</span>(<span class="params">msg</span>):</span><br><span class="line">    thread_name = threading.currentThread().name</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;result: &lt; <span class="subst">&#123;msg&#125;</span> &gt; <span class="subst">&#123;thread_name&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">single_recv_thread_test</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    单线程循环接收消息</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    worker = Worker(long_time_recv_task, args=(<span class="string">&quot;消息接收&quot;</span>,), kwargs=&#123;<span class="string">&quot;start&quot;</span>: <span class="number">100</span>&#125;)</span><br><span class="line">    worker.signal_connect(</span><br><span class="line">        msg_handler=<span class="keyword">lambda</span> msg: <span class="built_in">print</span>(msg),</span><br><span class="line">        result_handler=on_result_received,</span><br><span class="line">    )</span><br><span class="line">    worker.start()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">pic_download_task</span>(<span class="params">url</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    下载图片, 保存到pic目录</span></span><br><span class="line"><span class="string">    :param url: 图片地址</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line">    response = requests.get(url)</span><br><span class="line">    <span class="keyword">if</span> response.status_code != <span class="number">200</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;连接图片服务器失败：&quot;</span>, response.status_code)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    file_name = url.split(<span class="string">&#x27;/&#x27;</span>)[-<span class="number">1</span>]</span><br><span class="line">    <span class="comment"># 如果pic目录不存在，则创建</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">&#x27;pic&#x27;</span>):</span><br><span class="line">        os.mkdir(<span class="string">&#x27;pic&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">f&quot;pic/<span class="subst">&#123;file_name&#125;</span>&quot;</span>, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        f.write(response.content)</span><br><span class="line">        <span class="comment"># 返回f的绝对路径</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;&#123;&#125; -&gt; &#123;&#125;&quot;</span>.<span class="built_in">format</span>(url, os.path.abspath(f.name))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">thread_pool_test</span>():</span><br><span class="line">    <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    利用线程池连续下载多个图片文件</span></span><br><span class="line"><span class="string">    :return:</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line">    pics = [</span><br><span class="line">        <span class="string">&quot;https://www.baidu.com/img/bd_logo1.png&quot;</span>,</span><br><span class="line">        <span class="string">&quot;https://c-ssl.duitang.com/uploads/blog/202305/26/EWSwLxqBhV5zZJa.jpg&quot;</span>,</span><br><span class="line">        <span class="string">&quot;https://c-ssl.duitang.com/uploads/blog/202305/26/lGSxjBMefx04z33.jpg&quot;</span>,</span><br><span class="line">        <span class="string">&quot;https://c-ssl.duitang.com/uploads/blog/202305/26/XxSLogyQCQd9emB.jpg&quot;</span>,</span><br><span class="line">        <span class="string">&quot;https://c-ssl.duitang.com/uploads/item/202002/26/20200226215648_yynrr.jpg&quot;</span>,</span><br><span class="line">    ]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> pic <span class="keyword">in</span> pics:</span><br><span class="line">        worker = Worker(pic_download_task, args=(pic,))</span><br><span class="line">        worker.signal_connect(result_handler=<span class="keyword">lambda</span> msg: <span class="built_in">print</span>(<span class="string">&quot;保存成功：&quot;</span>, msg))</span><br><span class="line">        worker.start_in_thread_pool()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app = QApplication(sys.argv)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用方式1：单线程循环接收消息示例</span></span><br><span class="line">    single_recv_thread_test()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 使用方式2：利用线程池异步执行多个任务示例（下载多个图片文件）</span></span><br><span class="line">    thread_pool_test()</span><br><span class="line"></span><br><span class="line">    sys.exit(app.exec_())</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="多任务管理"><a href="#多任务管理" class="headerlink" title="多任务管理"></a>多任务管理</h2><p>指开启一个长期运行的线程，在线程内部，运行一个循环，循环中阻塞式地接收用户发来的任务（定期或非定期），并及时按照用户预定的函数进行执行（通常要消耗一小段时间）。这个多任务管理器应有如下特点：</p>
+<ul>
+<li>不会阻塞主线程（保障主界面操作顺滑）</li>
+<li>一旦任务完成，将执行结果返回给任务的发布者。这可以通过回调函数、事件或其他适当的机制来实现。</li>
+<li>如果任务执行过程中发生异常，需要将异常信息返回给任务的发布者，以便了解并采取适当的处理措施。</li>
+<li>可以保障任务的执行顺序和发布任务的顺序一致（通过队列保证要求）</li>
+<li>这个长期任务管理器可以通过调用方法进行停止</li>
+</ul>
+<h3 id="拷贝依赖-1"><a href="#拷贝依赖-1" class="headerlink" title="拷贝依赖"></a>拷贝依赖</h3><p>这段代码定义了一个 <code>TaskWorker</code> 类，该类继承自 <code>QThread</code> 类，并使用队列实现了多个任务的异步执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">运行一个独立线程，用于执行长期循环发送任务，可以随时执行异步任务，内部维护一个消息队列（例如：发送蓝牙、串口消息）</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">这段代码定义了一个 TaskWorker 类，该类继承自 QThread 类，并使用队列实现了任务的异步执行。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> queue <span class="keyword">import</span> Queue</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> QThread, pyqtSignal</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">TaskWorker</span>(<span class="title class_ inherited__">QThread</span>):</span><br><span class="line">    taskResult = pyqtSignal(<span class="built_in">object</span>)</span><br><span class="line">    taskError = pyqtSignal(Exception)</span><br><span class="line">    taskFinished = pyqtSignal()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, do_task, parent=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="built_in">super</span>(TaskWorker, self).__init__(parent)</span><br><span class="line">        self.do_task = do_task</span><br><span class="line">        self.task_queue = Queue()</span><br><span class="line">        self.is_running = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">run</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">while</span> self.is_running:</span><br><span class="line">            <span class="comment"># 不断从队列中取出任务并执行，如果没有任务则阻塞</span></span><br><span class="line">            task_arg = self.task_queue.get()</span><br><span class="line">            <span class="comment"># 如果取出的任务为 None，且线程已设置为关闭，则退出线程</span></span><br><span class="line">            <span class="keyword">if</span> task_arg <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> <span class="keyword">not</span> self.is_running:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                result = self.do_task(task_arg)</span><br><span class="line">                self.taskResult.emit(result)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                self.taskError.emit(e)</span><br><span class="line"></span><br><span class="line">        self.taskFinished.emit()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">signal_connect</span>(<span class="params">self, result_handler=<span class="literal">None</span>, finished_handler=<span class="literal">None</span>, error_handler=<span class="literal">None</span></span>):</span><br><span class="line"></span><br><span class="line">        <span class="comment"># Connect the worker&#x27;s signal to the handler slot</span></span><br><span class="line">        <span class="keyword">if</span> result_handler <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            self.taskResult.connect(result_handler)</span><br><span class="line">        <span class="keyword">if</span> finished_handler <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            self.taskFinished.connect(finished_handler)</span><br><span class="line">        <span class="keyword">if</span> error_handler <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            self.taskError.connect(error_handler)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">join_queue</span>(<span class="params">self, task</span>):</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.is_running:</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">        self.task_queue.put(task)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">stop</span>(<span class="params">self</span>):</span><br><span class="line">        self.is_running = <span class="literal">False</span></span><br><span class="line">        <span class="comment"># Put a None task to the queue to stop the thread</span></span><br><span class="line">        self.task_queue.put(<span class="literal">None</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="使用示例-1"><a href="#使用示例-1" class="headerlink" title="使用示例"></a>使用示例</h3><p>主程序中创建了一个 <code>TaskWorker</code> 实例，将任务添加到任务队列中，并使用手动&#x2F;定时器定期添加任务。<br>当任务完成时，<code>TaskWorker</code> 实例会发出信号，主程序中的槽函数会接收到这些信号并进行处理。</p>
+<p>代码具体步骤如下：</p>
+<ol>
+<li>在主程序中定义一个 <code>do_task</code> 函数，该函数用于执行任务。</li>
+<li>在主程序中定义两个槽函数 <code>on_result</code> 和 <code>on_error</code>，分别用于处理任务完成和任务出错的信号。</li>
+<li>创建一个 <code>TaskWorker</code> 实例，并传入任务函数，函数里是任务要执行的内容</li>
+<li>将 <code>TaskWorker</code> 实例的信号连接到槽函数。</li>
+<li>运行 <code>TaskWorker</code> 实例的<code>start</code>方法启动线程</li>
+<li>运行主程序，通过各种方式把任务及任务参数通过<code>join_queue</code>加入队列</li>
+<li>等待多个任务执行完成。<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">主程序中创建了一个 TaskWorker 实例，将任务添加到任务队列中，并使用定时器定期添加任务。</span></span><br><span class="line"><span class="string">当任务完成时，TaskWorker 实例会发出信号，主程序中的槽函数会接收到这些信号并进行处理。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"> 代码具体步骤如下：</span></span><br><span class="line"><span class="string"> 1. 在主程序中定义一个 do_task 函数，该函数用于执行任务。</span></span><br><span class="line"><span class="string"> 2. 在主程序中定义两个槽函数 on_result 和 on_error，分别用于处理任务完成和任务出错的信号。</span></span><br><span class="line"><span class="string"> 3. 创建一个 TaskWorker 实例。</span></span><br><span class="line"><span class="string"> 4. 将 TaskWorker 实例的信号连接到槽函数。</span></span><br><span class="line"><span class="string"> 5. 将任务添加到任务队列中，并使用定时器定期添加任务。</span></span><br><span class="line"><span class="string"> 6. 运行主程序，等待任务执行完成。</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="keyword">from</span> PyQt5.QtWidgets <span class="keyword">import</span> QApplication</span><br><span class="line"><span class="keyword">from</span> PyQt5.QtCore <span class="keyword">import</span> pyqtSlot, QTimer</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> qt_task <span class="keyword">import</span> TaskWorker</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">do_task</span>(<span class="params">task_arg</span>):</span><br><span class="line">    a, b = task_arg</span><br><span class="line">    rst = a / b</span><br><span class="line">    <span class="comment"># Simulate a time-consuming task</span></span><br><span class="line">    time.sleep(<span class="number">1</span>)  <span class="comment"># Pause for 1 seconds</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">f&quot;Task signal_result <span class="subst">&#123;a&#125;</span> / <span class="subst">&#123;b&#125;</span> = <span class="subst">&#123;rst&#125;</span>&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@pyqtSlot(<span class="params"><span class="built_in">object</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_result</span>(<span class="params">result</span>):</span><br><span class="line">    <span class="comment"># print(threading.currentThread())</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;on result: &quot;</span>, result)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@pyqtSlot(<span class="params">Exception</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">on_error</span>(<span class="params">e</span>):</span><br><span class="line">    <span class="comment"># print(threading.currentThread())</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;on error: &quot;</span>, e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app = QApplication(sys.argv)</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;main: &quot;</span>, threading.currentThread())</span><br><span class="line"></span><br><span class="line">    task_worker = TaskWorker(do_task)</span><br><span class="line">    task_worker.signal_connect(</span><br><span class="line">        result_handler=on_result,</span><br><span class="line">        finished_handler=<span class="keyword">lambda</span>: <span class="built_in">print</span>(<span class="string">&quot;on finished&quot;</span>),</span><br><span class="line">        error_handler=on_error,</span><br><span class="line">    )</span><br><span class="line">    task_worker.start()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Add tasks to the task manager</span></span><br><span class="line">    task_worker.join_queue((<span class="number">3</span>, <span class="number">2</span>))</span><br><span class="line">    task_worker.join_queue((<span class="number">4</span>, <span class="number">2</span>))</span><br><span class="line">    task_worker.join_queue((<span class="number">5</span>, <span class="number">2</span>))</span><br><span class="line">    task_worker.join_queue((<span class="number">5</span>, <span class="number">0</span>))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Use a timer to add tasks periodically</span></span><br><span class="line">    timer = QTimer()</span><br><span class="line">    timer.timeout.connect(<span class="keyword">lambda</span>: task_worker.join_queue((<span class="number">5</span>, <span class="number">2</span>)))</span><br><span class="line">    timer.start(<span class="number">3000</span>)  <span class="comment"># Add a task every 5 seconds</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 执行一个10秒后的延时任务</span></span><br><span class="line">    QTimer.singleShot(<span class="number">10000</span>, <span class="keyword">lambda</span>: task_worker.stop())</span><br><span class="line"></span><br><span class="line">    sys.exit(app.exec_())</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id=""><a href="#" class="headerlink" title=""></a></h2>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt%E5%A4%9A%E7%BA%BF%E7%A8%8B&%E5%A4%9A%E4%BB%BB%E5%8A%A1%E7%AE%A1%E7%90%86(%E4%BA%86%E8%A7%A3)/" title="PyQt多线程&amp;多任务管理(了解)">https://gaojiajie1993.github.io/blog/2023/02/13/Python/PyQt多线程&多任务管理(了解)/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/PyQt/" rel="tag"># PyQt</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2023/02/13/Python/PyQt%E5%8D%95%E9%80%89%E6%A1%86%E5%92%8C%E5%A4%8D%E9%80%89%E6%A1%86/" rel="prev" title="PyQt单选框和复选框">
+                  <i class="fa fa-chevron-left"></i> PyQt单选框和复选框
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2023/02/13/Python/PyQt%E4%BF%A1%E5%8F%B7%E5%92%8C%E6%A7%BD/" rel="next" title="PyQt信号和槽">
+                  PyQt信号和槽 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"d9ae18fa620caf798f2e35cd8b4fe9bf"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

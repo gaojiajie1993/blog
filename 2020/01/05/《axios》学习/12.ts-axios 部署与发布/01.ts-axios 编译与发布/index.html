@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="ts-axios 编译与发布需求分析前面的章节我们完成 ts-axios 库的代码编写和单元测试。这一章我们希望把代码部署发布到公共 npm 上，供别人下载使用。但是并不是所有人都会使用 TypeScript 开发，仍然有大量的 JavaScript 用户，它们是不能直接引用 TypeScript 代码的，因此我们需要先对源码做编译和打包，然后再发布。 由于我们会把包发布到公共的 npm 源，如果">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ts-axios 编译与发布">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="ts-axios 编译与发布需求分析前面的章节我们完成 ts-axios 库的代码编写和单元测试。这一章我们希望把代码部署发布到公共 npm 上，供别人下载使用。但是并不是所有人都会使用 TypeScript 开发，仍然有大量的 JavaScript 用户，它们是不能直接引用 TypeScript 代码的，因此我们需要先对源码做编译和打包，然后再发布。 由于我们会把包发布到公共的 npm 源，如果">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-05T02:56:02.000Z">
+<meta property="article:modified_time" content="2024-07-25T16:00:46.665Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="axios">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/","path":"2020/01/05/《axios》学习/12.ts-axios 部署与发布/01.ts-axios 编译与发布/","title":"ts-axios 编译与发布"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ts-axios 编译与发布 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#ts-axios-%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83"><span class="nav-number">1.</span> <span class="nav-text">ts-axios 编译与发布</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9C%80%E6%B1%82%E5%88%86%E6%9E%90"><span class="nav-number">1.1.</span> <span class="nav-text">需求分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E8%AF%91%E5%92%8C%E6%89%93%E5%8C%85"><span class="nav-number">1.2.</span> <span class="nav-text">编译和打包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-rollup-config-ts"><span class="nav-number">1.2.1.</span> <span class="nav-text">修改 rollup.config.ts</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-package-json"><span class="nav-number">1.2.2.</span> <span class="nav-text">修改 package.json</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E5%8C%96%E9%83%A8%E7%BD%B2"><span class="nav-number">1.3.</span> <span class="nav-text">自动化部署</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9-package-json-1"><span class="nav-number">1.3.1.</span> <span class="nav-text">修改 package.json</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E5%86%99%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC"><span class="nav-number">1.3.2.</span> <span class="nav-text">编写部署脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%90%E8%A1%8C%E9%83%A8%E7%BD%B2%E8%84%9A%E6%9C%AC"><span class="nav-number">1.4.</span> <span class="nav-text">运行部署脚本</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ts-axios 编译与发布 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ts-axios 编译与发布<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-01-05 10:56:02" itemprop="dateCreated datePublished" datetime="2020-01-05T10:56:02+08:00">2020-01-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 00:00:46" itemprop="dateModified" datetime="2024-07-26T00:00:46+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">《axios》学习</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.7k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="ts-axios-编译与发布"><a href="#ts-axios-编译与发布" class="headerlink" title="ts-axios 编译与发布"></a>ts-axios 编译与发布</h1><h2 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h2><p>前面的章节我们完成 <code>ts-axios</code> 库的代码编写和单元测试。这一章我们希望把代码部署发布到公共 <code>npm</code> 上，供别人下载使用。但是并不是所有人都会使用 TypeScript 开发，仍然有大量的 JavaScript 用户，它们是不能直接引用 TypeScript 代码的，因此我们需要先对源码做编译和打包，然后再发布。</p>
+<p>由于我们会把包发布到公共的 npm 源，如果你还没有 <code>npm</code> 账号，那么需要先去<a target="_blank" rel="noopener" href="https://www.npmjs.com/signup">官网注册</a>。注册完成后，可以去终端执行 <code>npm login</code> 登录。这个步骤非常重要，决定你最终能否发布成功。</p>
+<span id="more"></span>
+<h2 id="编译和打包"><a href="#编译和打包" class="headerlink" title="编译和打包"></a>编译和打包</h2><p>我们会利用 <a target="_blank" rel="noopener" href="https://github.com/rollup/rollup">rollup</a> 来打包我们的 <code>ts-axios</code> 库，它是一个非常著名的编译打包工具，Vue.js 也是利用 rollup 编译打包的。相比 webpack，它非常适合去编译和打包一些 JS 库。</p>
+<p>由于使用 <code>typescript-library-starter</code> 初始化我们的项目，我们已经拥有了 rollup 打包的相关配置和相关插件的安装，接下来我们就来对生成的 <code>rollup.config.ts</code> 做小小的修改。</p>
+<h3 id="修改-rollup-config-ts"><a href="#修改-rollup-config-ts" class="headerlink" title="修改 rollup.config.ts"></a>修改 rollup.config.ts</h3><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> resolve <span class="keyword">from</span> <span class="string">&#x27;rollup-plugin-node-resolve&#x27;</span></span><br><span class="line"><span class="keyword">import</span> commonjs <span class="keyword">from</span> <span class="string">&#x27;rollup-plugin-commonjs&#x27;</span></span><br><span class="line"><span class="keyword">import</span> sourceMaps <span class="keyword">from</span> <span class="string">&#x27;rollup-plugin-sourcemaps&#x27;</span></span><br><span class="line"><span class="keyword">import</span> camelCase <span class="keyword">from</span> <span class="string">&#x27;lodash.camelcase&#x27;</span></span><br><span class="line"><span class="keyword">import</span> typescript <span class="keyword">from</span> <span class="string">&#x27;rollup-plugin-typescript2&#x27;</span></span><br><span class="line"><span class="keyword">import</span> json <span class="keyword">from</span> <span class="string">&#x27;rollup-plugin-json&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> pkg = <span class="built_in">require</span>(<span class="string">&#x27;./package.json&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> libraryName = <span class="string">&#x27;axios&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">input</span>: <span class="string">`src/index.ts`</span>,</span><br><span class="line">  <span class="attr">output</span>: [</span><br><span class="line">    &#123; <span class="attr">file</span>: pkg.<span class="property">main</span>, <span class="attr">name</span>: <span class="title function_">camelCase</span>(libraryName), <span class="attr">format</span>: <span class="string">&#x27;umd&#x27;</span>, <span class="attr">sourcemap</span>: <span class="literal">true</span> &#125;,</span><br><span class="line">    &#123; <span class="attr">file</span>: pkg.<span class="property">module</span>, <span class="attr">format</span>: <span class="string">&#x27;es&#x27;</span>, <span class="attr">sourcemap</span>: <span class="literal">true</span> &#125;</span><br><span class="line">  ],</span><br><span class="line">  <span class="comment">// Indicate here external modules you don&#x27;t wanna include in your bundle (i.e.: &#x27;lodash&#x27;)</span></span><br><span class="line">  <span class="attr">external</span>: [],</span><br><span class="line">  <span class="attr">watch</span>: &#123;</span><br><span class="line">    <span class="attr">include</span>: <span class="string">&#x27;src/**&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">plugins</span>: [</span><br><span class="line">    <span class="comment">// Allow json resolution</span></span><br><span class="line">    <span class="title function_">json</span>(),</span><br><span class="line">    <span class="comment">// Compile TypeScript files</span></span><br><span class="line">    <span class="title function_">typescript</span>(&#123; <span class="attr">useTsconfigDeclarationDir</span>: <span class="literal">true</span> &#125;),</span><br><span class="line">    <span class="comment">// Allow bundling cjs modules (unlike webpack, rollup doesn&#x27;t understand cjs)</span></span><br><span class="line">    <span class="title function_">commonjs</span>(),</span><br><span class="line">    <span class="comment">// Allow node_modules resolution, so you can use &#x27;external&#x27; to control</span></span><br><span class="line">    <span class="comment">// which external modules to include in the bundle</span></span><br><span class="line">    <span class="comment">// https://github.com/rollup/rollup-plugin-node-resolve#usage</span></span><br><span class="line">    <span class="title function_">resolve</span>(),</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Resolve source maps to the original source</span></span><br><span class="line">    <span class="title function_">sourceMaps</span>()</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意要修改的地方，把 <code>libraryName</code> 修改为 <code>axios</code>，<code>input</code> 修改为 <code>src/index.ts</code>。</p>
+<p><code>rollup</code> 的配置很简单，我们简单地过一下。</p>
+<ul>
+<li>input</li>
+</ul>
+<p>表示打包入口文件。</p>
+<ul>
+<li>output</li>
+</ul>
+<p>表示输出的目标文件，它是一个对象数组，我们可以指定输出的格式，比如 <code>umd</code> 格式、<code>es</code> 模式等。</p>
+<ul>
+<li>external</li>
+</ul>
+<p>声明它的外部依赖，可以不被打包进去。</p>
+<ul>
+<li>watch</li>
+</ul>
+<p>监听文件的变化，重新编译，只有在编译的时候开启 <code>--watch</code> 才生效。</p>
+<ul>
+<li>plugins</li>
+</ul>
+<p>编译过程中使用的插件，其中 <code>rollup-plugin-typescript2</code> 就是用来编译 TypeScript 文件，<code>useTsconfigDeclarationDir</code> 表示使用 <code>tsconfig.json</code> 文件中定义的 <code>declarationDir</code>。其它插件感兴趣的同学可以自己去查阅文档。</p>
+<h3 id="修改-package-json"><a href="#修改-package-json" class="headerlink" title="修改 package.json"></a>修改 package.json</h3><p>由于我们已经在 <code>rollup.config.ts</code> 中修改了 <code>libraryName</code> 为 <code>axios</code>， 那么在 <code>package.json</code> 文件中你需要做相关的修改：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">&quot;main&quot;</span>: <span class="string">&quot;dist/axios.umd.js&quot;</span>,</span><br><span class="line">  <span class="string">&quot;module&quot;</span>: <span class="string">&quot;dist/axios.es5.js&quot;</span>,</span><br><span class="line">  <span class="string">&quot;typings&quot;</span>: <span class="string">&quot;dist/types/index.d.ts&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们在控制台执行 <code>npm run build</code>，会编译输出 <code>dist</code> 目录，其中 <code>lib</code> 目录是单个 <code>.ts</code> 文件编译后的 <code>.js</code> 文件。<code>types</code> 目录是所有 <code>.ts</code> 文件编译后生产的 <code>.d.ts</code> 声明文件。<code>axios.es5.js</code> 是编译后生成的 es 模式的入口文件，用在 <code>package.json</code> 的 <code>module</code> 字段，<code>axios.umd.js</code> 文件是编译后生成的 <code>umd</code> 模式的入口文件，用在 <code>package.json</code> 的 <code>main</code> 字段。</p>
+<h2 id="自动化部署"><a href="#自动化部署" class="headerlink" title="自动化部署"></a>自动化部署</h2><p>由于 <code>semantic-release</code> 插件过于黑盒也略微重量，我还是决定教同学们自己编写自动化部署脚本，这样更灵活，意义也更大，因为大部分场景是用不到那么多 feature 的。</p>
+<h3 id="修改-package-json-1"><a href="#修改-package-json-1" class="headerlink" title="修改 package.json"></a>修改 package.json</h3><p>发布到 npm 之前你需要为你的包命名，由于 <code>ts-axios</code> 这个名字已经被占用了，我使用了 <code>ts-axios-new</code> 这个名称，当然你学到这里，就需要起一个新名字了。可以使用 <code>npm view [&lt;@scope&gt;/]&lt;pkg&gt;[@&lt;version&gt;]</code> 的方式去搜索一个包名是否已经存在，比如你搜索 <code>npm view ts-axios-new</code> 会发现这个包已经存在，返回这个包相关信息。如果你搜索 <code>npm view xxxx</code> 返回错误 404 的话，那么你就可以使用 <code>xxxx</code> 这个包名了。</p>
+<p>如果你想让你发布的包关联你的仓库地址，可以配置 <code>repository</code> 的 <code>url</code> 字段。</p>
+<p>另外我们增加 2 个 npm scripts：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;prepub&quot;</span><span class="punctuation">:</span> <span class="string">&quot;npm run test:prod &amp;&amp; npm run build&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;pub&quot;</span><span class="punctuation">:</span> <span class="string">&quot;sh release.sh&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>当我们运行 <code>npm run pub</code> 的时候，会优先执行 <code>prepub</code> 脚本，在 <code>prepub</code> 中我们运行了 <code>test:prod</code> 和 <code>build</code> 2 个脚本。<code>&amp;&amp;</code> 符号表示前面一个命令执行成功后才会执行后面的任务。</p>
+<p><code>npm run test:prod</code> 实际上运行了 <code>npm run lint &amp;&amp; npm run test -- --no-cache</code>。 先运行 <code>lint</code> 去校验我们的源码和测试文件是否遵循 <code>tslint</code> 规范，再运行 <code>test</code> 去跑测试。</p>
+<p><code>npm run build</code> 实际上运行了 <code>tsc --module commonjs</code>、<code>rollup -c rollup.config.ts</code> 和 <code>typedoc --out docs --target es6 --theme minimal --mode file src</code>。先运行 <code>tsc</code> 去编译我们的 <code>TypeScript</code> 文件，<code>dist/lib</code> 和 <code>dist/types</code> 下的文件就是该命令产生的，然后运行 <code>rollup</code> 去构建 <code>axios.umd.js</code> 及 <code>axios.es.js</code>，最后运行 <code>typedoc</code> 去构建项目的文档。</p>
+<p>运行完 <code>prepub</code> 后就会再运行 <code>pub</code> 命令，实际上执行了 <code>sh release.sh</code> 命令，但是目前我们没有这个脚本，接下来我们就需要来编写部署脚本 <code>release.sh</code>。</p>
+<h3 id="编写部署脚本"><a href="#编写部署脚本" class="headerlink" title="编写部署脚本"></a>编写部署脚本</h3><p><code>release.sh</code>：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/usr/bin/env sh</span></span><br><span class="line"><span class="built_in">set</span> -e</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;Enter release version: &quot;</span></span><br><span class="line"><span class="built_in">read</span> VERSION</span><br><span class="line"><span class="built_in">read</span> -p <span class="string">&quot;Releasing <span class="variable">$VERSION</span> - are you sure? (y/n)&quot;</span> -n 1 -r</span><br><span class="line"><span class="built_in">echo</span>  <span class="comment"># (optional) move to a new line</span></span><br><span class="line"><span class="keyword">if</span> [[ <span class="variable">$REPLY</span> =~ ^[Yy]$ ]]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">&quot;Releasing <span class="variable">$VERSION</span> ...&quot;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># commit</span></span><br><span class="line">  git add -A</span><br><span class="line">  git commit -m <span class="string">&quot;[build] <span class="variable">$VERSION</span>&quot;</span></span><br><span class="line">  npm version <span class="variable">$VERSION</span> --message <span class="string">&quot;[release] <span class="variable">$VERSION</span>&quot;</span></span><br><span class="line">  git push origin master</span><br><span class="line"></span><br><span class="line">  <span class="comment"># publish</span></span><br><span class="line">  npm publish</span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></figure>
+
+<p>部署脚本是 shell 脚本，shell 脚本就是封装了多行控制台命令，来逐行解释他们的含义。</p>
+<p><code>#!/usr/bin/env sh</code> 用来表示它是一个 shell 脚本。</p>
+<p><code>set -e</code> 告诉脚本如果执行结果不为 true 则退出。</p>
+<p><code>echo &quot;Enter release version: &quot;</code> 在控制台输出 <code>Enter release version:</code>。</p>
+<p><code>read VERSION</code> 表示从标准输入读取值，并赋值给 $VERSION 变量。</p>
+<p><code>read -p &quot;Releasing $VERSION - are you sure? (y/n)&quot; -n 1 -r</code>，其中 <code>read -p</code> 表示给出提示符，后面接着 <code>Releasing $VERSION - are you sure? (y/n)</code> 提示符；<code>-n 1</code> 表示限定最多可以有 1 个字符可以作为有效读入；<code>-r</code> 表示禁止反斜线的转义功能。因为我们的 read 并没有指定变量名，那么默认这个输入读取值会赋值给 <code>$REPLY</code> 变量。</p>
+<p><code>echo</code> 输出空值表示跳到一个新行，<code>#</code> 在 shell 脚本中表示注释。</p>
+<p><code>if [[ $REPLY =~ ^[Yy]$ ]]</code> 表示 shell 脚本中的流程控制语句，判断 <code>$REPLY</code> 是不是大小写的 <code>y</code>，如果满足，则走到后面的 <code>then</code> 逻辑。</p>
+<p><code>echo &quot;Releasing $VERSION ...&quot;</code>  在控制台输出 <code>Releasing $VERSION ...</code>。</p>
+<p><code>git add -A</code> 表示把代码所有变化提交到暂存区。</p>
+<p><code>git commit -m &quot;[build] $VERSION&quot;</code> 表示提交代码，提交注释是 <code>[build] $VERSION</code>。</p>
+<p><code>npm version $VERSION --message &quot;[release] $VERSION&quot;</code> 是修改 <code>package.json</code> 中的 <code>version</code> 字段到 <code>$VERSION</code>，并且提交一条修改记录，提交注释是 <code>[release] $VERSION</code>。</p>
+<p><code>git push origin master</code> 是把代码发布到主干分支。</p>
+<p><code>npm publish</code> 是把仓库发布到 <code>npm</code> 上，我们会把 <code>dist</code> 目录下的代码都发布到 <code>npm</code> 上，因为我们在 <code>package.json</code> 中配置的是 <code>files</code> 是 <code>[&quot;dist&quot;]</code>。</p>
+<h2 id="运行部署脚本"><a href="#运行部署脚本" class="headerlink" title="运行部署脚本"></a>运行部署脚本</h2><p>接下来我们就运行 <code>npm run pub</code> 脚本部署，我们会发现在 <code>npm run prepub</code> 阶段，在执行 <code>tslint  --project tsconfig.json -t codeFrame &#39;src/**/*.ts&#39; &#39;test/**/*.ts&#39;</code> 的时候失败了，原因是我们有代码不符合 lint 规范。原来是 <code>core/xhr.ts</code> 文件中 <code>processCancel</code> 函数中对 <code>promise</code> 的处理，我们没有对异常情况处理，所以我们要给它加上 <code>catch</code> 的逻辑：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">processCancel</span>(<span class="params"></span>): <span class="built_in">void</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (cancelToken) &#123;</span><br><span class="line">    cancelToken.<span class="property">promise</span></span><br><span class="line">      .<span class="title function_">then</span>(<span class="function"><span class="params">reason</span> =&gt;</span> &#123;</span><br><span class="line">        request.<span class="title function_">abort</span>()</span><br><span class="line">        <span class="title function_">reject</span>(reason)</span><br><span class="line">      &#125;)</span><br><span class="line">      .<span class="title function_">catch</span>(</span><br><span class="line">        <span class="comment">/* istanbul ignore next */</span></span><br><span class="line">        <span class="function">() =&gt;</span> &#123;</span><br><span class="line">        <span class="comment">// do nothing</span></span><br><span class="line">      &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于我们不会走到 <code>catch</code> 逻辑，所以我们给它添加一个注释 <code>/* istanbul ignore next */</code> 忽略该代码分支的测试。</p>
+<p>然后我们再重新运行 <code>npm run pub</code> 逻辑，它会先执行 <code>test</code>，然后运行 <code>build</code> 编译代码，再执行 <code>release.sh</code> 脚本。我们输入了要发布的版本，它就可以完成了整个代码的发布流程。</p>
+<p>通过编写部署脚本的一行命令发布的方式，不仅可以用在这种 JS 库，也可以用于我们平时项目开发中，可以大大帮助我们提高生产率，也是前端工程化中必不可少的一个环节，希望同学们都能学会并掌握它。</p>
+<p>至此我们完成了项目的部署和发布，我们也可以在 <code>npm</code> 官网上看到我们发布的包，下一节课我们来创建一个实际项目，来引用我们开发的 <code>ts-axios</code> 库。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/01.ts-axios%20%E7%BC%96%E8%AF%91%E4%B8%8E%E5%8F%91%E5%B8%83/" title="ts-axios 编译与发布">https://gaojiajie1993.github.io/blog/2020/01/05/《axios》学习/12.ts-axios 部署与发布/01.ts-axios 编译与发布/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/axios/" rel="tag"># axios</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/04.ts-axios%20%E5%9F%BA%E7%A1%80%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0/06.%E5%A4%84%E7%90%86%E5%93%8D%E5%BA%94%20data/" rel="prev" title="处理响应 data">
+                  <i class="fa fa-chevron-left"></i> 处理响应 data
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2020/01/05/%E3%80%8Aaxios%E3%80%8B%E5%AD%A6%E4%B9%A0/12.ts-axios%20%E9%83%A8%E7%BD%B2%E4%B8%8E%E5%8F%91%E5%B8%83/02.%E5%BC%95%E7%94%A8%20ts-axios%20%E5%BA%93/" rel="next" title="引用 ts-axios 库">
+                  引用 ts-axios 库 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"98bfcfd2f313c765992200f8df469539"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

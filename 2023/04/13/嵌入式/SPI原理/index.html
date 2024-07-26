@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="学习目标 了解SPI协议 熟悉SPI相关的名词 熟悉SPI通讯过程 熟悉SPI数据传输方式  学习内容SPI概念SPI（Serial Peripheral Interface）是一种串行外设接口协议，用于在微控制器（MCU）或微处理器之间进行通信。SPI协议通常用于连接主设备（通常是微控制器）与外部从设备（如传感器、存储器芯片、显示器等）之间，以传输数据和控制信息。SPI通信具有以下主要特点：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SPI的原理">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="学习目标 了解SPI协议 熟悉SPI相关的名词 熟悉SPI通讯过程 熟悉SPI数据传输方式  学习内容SPI概念SPI（Serial Peripheral Interface）是一种串行外设接口协议，用于在微控制器（MCU）或微处理器之间进行通信。SPI协议通常用于连接主设备（通常是微控制器）与外部从设备（如传感器、存储器芯片、显示器等）之间，以传输数据和控制信息。SPI通信具有以下主要特点：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1709686707890-0b56a149-df26-4d85-88a2-847bf831b5a6-722350.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1693579306466-08fbdb2e-be37-4c5f-a5b7-c739e9a7cfc5-499611.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1693581192686-60851958-c1a6-4456-b1b0-f5c6fbaa0bdd-242549.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1705387017353-bc21918b-3d7e-4748-9b63-e47f1f7b828e-855312.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941668826-51d98b79-9e9a-46a5-a44d-0666dccd6b98-099977.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941677409-91171fe0-dcef-42e9-aca4-479555c6fa07-638846.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1709696503996-a273033a-6fb1-426b-8c25-6853b6c3d64a-718622.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1709696517900-ca412728-43ba-4312-9f23-c261a9e27694-139635.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941803991-1653a9d7-d9b5-471d-b6a0-b79d8cac372f-002781.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941840179-8eb8f77f-57a0-4619-91ee-826b795da5a6-235392.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941871324-6c705282-b45d-4cc7-952d-ae0356ad658f-348885.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703941942011-26964ec3-ff72-4901-9cba-0fb0a26c94e2-418475.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1701530674862-11f0cced-6967-42ac-8c05-00675d79d236-601563.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1701530540013-bb73b65f-1862-46d8-a2c1-9feeb1dc79b6-093593.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1705447725856-b7425660-9423-4e8a-8de3-6fdd476b8e18-249503.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1703942396804-166e7576-6444-4781-aee0-8767f9931ad8-321334.png">
+<meta property="article:published_time" content="2023-04-13T05:26:20.000Z">
+<meta property="article:modified_time" content="2024-07-26T04:08:43.240Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gaojiajie1993.github.io/blog/img/uibKYqkdeb-JiITp/1709686707890-0b56a149-df26-4d85-88a2-847bf831b5a6-722350.png">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/","path":"2023/04/13/嵌入式/SPI原理/","title":"SPI的原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>SPI的原理 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">学习目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E5%86%85%E5%AE%B9"><span class="nav-number">2.</span> <span class="nav-text">学习内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SPI%E6%A6%82%E5%BF%B5"><span class="nav-number">2.1.</span> <span class="nav-text">SPI概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%AE%AF%E6%96%B9%E5%BC%8F"><span class="nav-number">2.2.</span> <span class="nav-text">通讯方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%AE%AF%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">通讯流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%AE%AF%E8%A7%84%E5%88%99"><span class="nav-number">2.4.</span> <span class="nav-text">通讯规则</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%92%9F%E6%9E%81%E6%80%A7CPOL"><span class="nav-number">2.4.1.</span> <span class="nav-text">时钟极性CPOL</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CPOL-x3D-0%EF%BC%88%E6%97%B6%E9%92%9F%E6%9E%81%E6%80%A7%E4%B8%BA0%EF%BC%89"><span class="nav-number">2.4.1.1.</span> <span class="nav-text">CPOL &#x3D; 0（时钟极性为0）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#CPOL-x3D-1%EF%BC%88%E6%97%B6%E9%92%9F%E6%9E%81%E6%80%A7%E4%B8%BA1%EF%BC%89"><span class="nav-number">2.4.1.2.</span> <span class="nav-text">CPOL &#x3D; 1（时钟极性为1）</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%97%B6%E9%92%9F%E7%9B%B8%E4%BD%8DCPHA"><span class="nav-number">2.4.2.</span> <span class="nav-text">时钟相位CPHA</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#CPHA-x3D-0%EF%BC%88%E6%97%B6%E9%92%9F%E7%9B%B8%E4%BD%8D%E4%B8%BA0%EF%BC%89"><span class="nav-number">2.4.2.1.</span> <span class="nav-text">CPHA &#x3D; 0（时钟相位为0）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#CPHA-x3D-1%EF%BC%88%E6%97%B6%E9%92%9F%E7%9B%B8%E4%BD%8D%E4%B8%BA1%EF%BC%89"><span class="nav-number">2.4.2.2.</span> <span class="nav-text">CPHA &#x3D; 1（时钟相位为1）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93%E4%B8%8E%E9%87%87%E6%A0%B7%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.5.</span> <span class="nav-text">传输与采样模式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#SPI%E6%A8%A1%E5%BC%8F0%EF%BC%88CPOL-x3D-0-CPHA-x3D-0%EF%BC%89"><span class="nav-number">2.5.1.</span> <span class="nav-text">SPI模式0（CPOL &#x3D; 0, CPHA &#x3D; 0）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SPI%E6%A8%A1%E5%BC%8F1%EF%BC%88CPOL-x3D-0-CPHA-x3D-1%EF%BC%89"><span class="nav-number">2.5.2.</span> <span class="nav-text">SPI模式1（CPOL &#x3D; 0, CPHA &#x3D; 1）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SPI%E6%A8%A1%E5%BC%8F2%EF%BC%88CPOL-x3D-1-CPHA-x3D-0%EF%BC%89"><span class="nav-number">2.5.3.</span> <span class="nav-text">SPI模式2（CPOL &#x3D; 1, CPHA &#x3D; 0）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SPI%E6%A8%A1%E5%BC%8F3%EF%BC%88CPOL-x3D-1-CPHA-x3D-1%EF%BC%89"><span class="nav-number">2.5.4.</span> <span class="nav-text">SPI模式3（CPOL &#x3D; 1, CPHA &#x3D; 1）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93%E5%9B%BE"><span class="nav-number">2.6.</span> <span class="nav-text">总结图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%BC%8F%E6%80%BB%E7%BB%93"><span class="nav-number">2.7.</span> <span class="nav-text">模式总结</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%A7%E5%B0%8F%E7%AB%AF"><span class="nav-number">2.8.</span> <span class="nav-text">大小端</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="SPI的原理 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SPI的原理<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-04-13 13:26:20" itemprop="dateCreated datePublished" datetime="2023-04-13T13:26:20+08:00">2023-04-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 12:08:43" itemprop="dateModified" datetime="2024-07-26T12:08:43+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ul>
+<li>了解SPI协议</li>
+<li>熟悉SPI相关的名词</li>
+<li>熟悉SPI通讯过程</li>
+<li>熟悉SPI数据传输方式</li>
+</ul>
+<h2 id="学习内容"><a href="#学习内容" class="headerlink" title="学习内容"></a>学习内容</h2><h3 id="SPI概念"><a href="#SPI概念" class="headerlink" title="SPI概念"></a>SPI概念</h3><p>SPI（Serial Peripheral Interface）是一种串行外设接口协议，用于在微控制器（MCU）或微处理器之间进行通信。SPI协议通常用于连接主设备（通常是微控制器）与外部从设备（如传感器、存储器芯片、显示器等）之间，以传输数据和控制信息。SPI通信具有以下主要特点：</p>
+<ul>
+<li><strong>串行通信</strong>: SPI使用多个引脚进行通信，包括时钟线（SCLK）、主输出从输入线（MOSI）、主输入从输出线（MISO）和片选线（CS&#x2F;SS）。通信是串行的，每个数据位都按位传输。</li>
+<li><strong>全双工通信</strong>: SPI支持全双工通信，这意味着主设备可以同时发送数据到从设备并接收从设备返回的数据。这使得SPI非常适合需要高速双向通信的应用。</li>
+<li><strong>主从架构</strong>: SPI通信通常涉及一个主设备和一个或多个从设备。主设备控制通信流程，选择要与之通信的从设备，然后发送和接收数据。从设备按照主设备的命令响应。</li>
+<li><strong>时钟同步</strong>: SPI通信是时钟同步的，主设备生成时钟信号来同步数据的传输。时钟信号的极性（CPOL）和相位（CPHA）可以配置，以确定数据在时钟的上升沿或下降沿进行传输。</li>
+<li><strong>多工作模式</strong>: SPI支持多种工作模式，通常有四种模式，根据CPOL和CPHA的不同组合而变化。这些模式允许SPI适应不同的硬件配置和通信需求。</li>
+<li><strong>快速传输速度</strong>: SPI通信可以在高速应用中运行，具体速度取决于硬件和软件的支持，通常可以达到几兆赫兹或更高的速度。</li>
+</ul>
+<p>SPI通信在嵌入式系统、传感器应用、存储器接口、显示屏控制和许多其他领域广泛使用。由于其高速、全双工和简单的硬件连接，SPI通信在许多嵌入式项目中都是一种常见的通信协议。不同的MCU和外部设备可能有不同的SPI实现细节，因此需要仔细查阅硬件文档以正确配置和使用SPI通信。</p>
+<h3 id="通讯方式"><a href="#通讯方式" class="headerlink" title="通讯方式"></a>通讯方式</h3><p><img src="/blog/./img/uibKYqkdeb-JiITp/1709686707890-0b56a149-df26-4d85-88a2-847bf831b5a6-722350.png" alt="image.png"><br>SPI可以称之为总线。总线是主设备和从设备间进行通讯的。<br>SPI通讯过程中包含了多条线：</p>
+<ul>
+<li><strong>时钟线（SCLK - Serial Clock）</strong>：时钟线用于同步数据传输，它由主设备生成，控制数据的传输速率。所有SPI设备都共享同一个SCLK线。</li>
+<li><strong>主输出从输入线（MOSI - Master Out Slave In）</strong>：MOSI线用于从主设备向从设备传输数据。主设备将要发送的数据通过这条线发送给从设备。</li>
+<li><strong>主输入从输出线（MISO - Master In Slave Out）</strong>：MISO线用于从从设备向主设备传输数据。从设备将其响应的数据通过这条线发送给主设备。</li>
+<li><strong>片选线（CS&#x2F;SS - Chip Select&#x2F;Slave Select）</strong>：片选线用于选择与主设备通信的特定从设备。当主设备希望与某个从设备通信时，它会使该从设备的片选线为低电平，以指示通信目标。当片选线为高电平时，从设备处于非活动状态。</li>
+</ul>
+<p>这四条线是SPI通信中的基本线路，它们允许主设备与一个或多个从设备之间进行全双工通信。根据具体的SPI配置和需求，有时还可以使用其他辅助线，如主设备的输出使能线或从设备的中断线，以实现更复杂的通信和控制功能。</p>
+<p>由于认知或者是其他原因，在业界，这四条线名字非常多，例如：</p>
+<ul>
+<li><strong>SCLK (Serial Clock) - 时钟线：</strong><ul>
+<li>SCK (Serial Clock)</li>
+<li>CLK (Clock)</li>
+<li>SCL (Serial Clock Line)</li>
+<li>SCKL (Serial Clock Line)</li>
+<li>SCLCK (Serial Clock)CK (Clock)</li>
+</ul>
+</li>
+<li><strong>MOSI (Master Out Slave In) - 主输出从输入线：</strong><ul>
+<li>SDO (Serial Data Out)</li>
+<li>SIMO (Serial Input, Master Output)</li>
+<li>MOS (Master Out, Slave In)</li>
+<li>TXD (Transmit Data)</li>
+<li>DOUT (Data Out)</li>
+</ul>
+</li>
+<li><strong>MISO (Master In Slave Out) - 主输入从输出线：</strong><ul>
+<li>SDI (Serial Data In)</li>
+<li>SOMI (Serial Output, Master Input)</li>
+<li>MISO (Master In, Slave Out)</li>
+<li>RXD (Receive Data)</li>
+<li>DIN (Data In)</li>
+</ul>
+</li>
+<li><strong>CS&#x2F;SS (Chip Select&#x2F;Slave Select) - 片选线：</strong><ul>
+<li>CS (Chip Select)</li>
+<li>CE (Chip Enable)</li>
+<li>SS (Slave Select)</li>
+<li>SSEL (Slave Select)</li>
+<li>CSB (Chip Select, Active Low)</li>
+<li>nCS (Negative Chip Select)</li>
+<li>NSS(Negative Slave select)</li>
+</ul>
+</li>
+</ul>
+<p>这些别名可能会在不同的文档、数据手册和硬件设计中出现。要确保正确配置SPI通信，你需要查阅所使用的硬件平台或芯片的文档，以了解它们使用的确切名称。通常，这些别名在硬件文档中都有详细的说明，以帮助你正确地连接和配置SPI设备。</p>
+<p><img src="/blog/./img/uibKYqkdeb-JiITp/1693579306466-08fbdb2e-be37-4c5f-a5b7-c739e9a7cfc5-499611.png" alt="57.png"><br>这个主设备是可以和多个从设备进行通讯，但是，只能有一个从设备在线。控制从设备在线的方式是，主设备为每一个从设备准备一条片选线，谁如果在线，他的片选线就拉低，其他的拉高。</p>
+<h3 id="通讯流程"><a href="#通讯流程" class="headerlink" title="通讯流程"></a>通讯流程</h3><p><img src="/blog/./img/uibKYqkdeb-JiITp/1693581192686-60851958-c1a6-4456-b1b0-f5c6fbaa0bdd-242549.png" alt="58.png"></p>
+<ul>
+<li>开启和结束片选，就是对CS片选线进行高低电平输出。</li>
+<li>读写数据，在片选完成后，可以无限制的读和写。</li>
+</ul>
+<h3 id="通讯规则"><a href="#通讯规则" class="headerlink" title="通讯规则"></a>通讯规则</h3><p><img src="/blog/./img/uibKYqkdeb-JiITp/1705387017353-bc21918b-3d7e-4748-9b63-e47f1f7b828e-855312.png" alt="image.png"></p>
+<h4 id="时钟极性CPOL"><a href="#时钟极性CPOL" class="headerlink" title="时钟极性CPOL"></a>时钟极性CPOL</h4><p>CPOL（Clock Polarity）是SPI（Serial Peripheral Interface）通信协议的一个重要参数，它用于确定时钟信号（CLK）在空闲状态时的电平以及数据的改变和采样时机。</p>
+<h5 id="CPOL-x3D-0（时钟极性为0）"><a href="#CPOL-x3D-0（时钟极性为0）" class="headerlink" title="CPOL &#x3D; 0（时钟极性为0）"></a>CPOL &#x3D; 0（时钟极性为0）</h5><p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941668826-51d98b79-9e9a-46a5-a44d-0666dccd6b98-099977.png" alt="image.png"><br>在这种模式下，时钟信号在空闲状态时保持<strong>低电平</strong>（0）。激活状态时保持<strong>高电平</strong>（1）<br>数据采样发生在CLK的<strong>上升沿</strong>。具体来说，当CLK从低电平（0）变为高电平（1）时，数据被采样。</p>
+<h5 id="CPOL-x3D-1（时钟极性为1）"><a href="#CPOL-x3D-1（时钟极性为1）" class="headerlink" title="CPOL &#x3D; 1（时钟极性为1）"></a>CPOL &#x3D; 1（时钟极性为1）</h5><p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941677409-91171fe0-dcef-42e9-aca4-479555c6fa07-638846.png" alt="image.png"><br>在这种模式下，时钟信号在空闲状态时保持<strong>高电平</strong>（1）。激活状态时保持<strong>低电平</strong>（0）<br>数据采样发生在SCLK的<strong>下降沿</strong>。具体来说，当SCLK从高电平（1）变为低电平（0）时，数据被采样。</p>
+<h4 id="时钟相位CPHA"><a href="#时钟相位CPHA" class="headerlink" title="时钟相位CPHA"></a>时钟相位CPHA</h4><p>CPHA（Clock Phase）是SPI（Serial Peripheral Interface）通信协议的另一个关键参数，它用于确定数据何时传输和采样相对于时钟信号（SCLK）的相位。CPHA有两种可能的取值：0和1。</p>
+<h5 id="CPHA-x3D-0（时钟相位为0）"><a href="#CPHA-x3D-0（时钟相位为0）" class="headerlink" title="CPHA &#x3D; 0（时钟相位为0）"></a>CPHA &#x3D; 0（时钟相位为0）</h5><p><img src="/blog/./img/uibKYqkdeb-JiITp/1709696503996-a273033a-6fb1-426b-8c25-6853b6c3d64a-718622.png" alt="image.png"><br>在这种模式下，在时钟信号<strong>第一个边沿采样数据</strong>，在<strong>第二个边沿改变数据</strong>（上升沿或下降沿取决于CPOL）</p>
+<h5 id="CPHA-x3D-1（时钟相位为1）"><a href="#CPHA-x3D-1（时钟相位为1）" class="headerlink" title="CPHA &#x3D; 1（时钟相位为1）"></a>CPHA &#x3D; 1（时钟相位为1）</h5><p><img src="/blog/./img/uibKYqkdeb-JiITp/1709696517900-ca412728-43ba-4312-9f23-c261a9e27694-139635.png" alt="image.png"><br>在这种模式下，在时钟信号<strong>第一个边沿改变数据</strong>，在<strong>第二个边沿采样数据</strong></p>
+<p>:::warning<br><strong>这里只数第几个边沿，到底是上升沿或下降沿？要取决于CPOL ！</strong><br>:::</p>
+<h3 id="传输与采样模式"><a href="#传输与采样模式" class="headerlink" title="传输与采样模式"></a>传输与采样模式</h3><p>由时钟极性和相位两两搭配，可以组成4种模式，主要表达的是何时进行传输，何时进行采样。</p>
+<h4 id="SPI模式0（CPOL-x3D-0-CPHA-x3D-0）"><a href="#SPI模式0（CPOL-x3D-0-CPHA-x3D-0）" class="headerlink" title="SPI模式0（CPOL &#x3D; 0, CPHA &#x3D; 0）"></a>SPI模式0（CPOL &#x3D; 0, CPHA &#x3D; 0）</h4><ul>
+<li>SCLK在空闲状态为低电平。</li>
+<li>数据在SCLK的上升沿改变（传输），在下降沿采样。</li>
+</ul>
+<p>这是最常见的SPI模式，通常用于许多SPI设备。</p>
+<p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941803991-1653a9d7-d9b5-471d-b6a0-b79d8cac372f-002781.png" alt="image.png"></p>
+<hr>
+<h4 id="SPI模式1（CPOL-x3D-0-CPHA-x3D-1）"><a href="#SPI模式1（CPOL-x3D-0-CPHA-x3D-1）" class="headerlink" title="SPI模式1（CPOL &#x3D; 0, CPHA &#x3D; 1）"></a>SPI模式1（CPOL &#x3D; 0, CPHA &#x3D; 1）</h4><ul>
+<li>SCLK在空闲状态为低电平。</li>
+<li>数据在SCLK的下降沿改变（传输），在上升沿采样。</li>
+</ul>
+<p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941840179-8eb8f77f-57a0-4619-91ee-826b795da5a6-235392.png" alt="image.png"></p>
+<hr>
+<h4 id="SPI模式2（CPOL-x3D-1-CPHA-x3D-0）"><a href="#SPI模式2（CPOL-x3D-1-CPHA-x3D-0）" class="headerlink" title="SPI模式2（CPOL &#x3D; 1, CPHA &#x3D; 0）"></a>SPI模式2（CPOL &#x3D; 1, CPHA &#x3D; 0）</h4><ul>
+<li>SCLK在空闲状态为高电平。</li>
+<li>数据在SCLK的上升沿改变（传输），在下降沿采样。</li>
+</ul>
+<p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941871324-6c705282-b45d-4cc7-952d-ae0356ad658f-348885.png" alt="image.png"></p>
+<hr>
+<h4 id="SPI模式3（CPOL-x3D-1-CPHA-x3D-1）"><a href="#SPI模式3（CPOL-x3D-1-CPHA-x3D-1）" class="headerlink" title="SPI模式3（CPOL &#x3D; 1, CPHA &#x3D; 1）"></a>SPI模式3（CPOL &#x3D; 1, CPHA &#x3D; 1）</h4><ul>
+<li>SCLK在空闲状态为高电平。</li>
+<li>数据在SCLK的下降沿改变（传输），在上升沿采样。</li>
+</ul>
+<p><img src="/blog/./img/uibKYqkdeb-JiITp/1703941942011-26964ec3-ff72-4901-9cba-0fb0a26c94e2-418475.png" alt="image.png"></p>
+<h3 id="总结图"><a href="#总结图" class="headerlink" title="总结图"></a>总结图</h3><p><img src="/blog/./img/uibKYqkdeb-JiITp/1701530674862-11f0cced-6967-42ac-8c05-00675d79d236-601563.png" alt="image.png"><br><img src="/blog/./img/uibKYqkdeb-JiITp/1701530540013-bb73b65f-1862-46d8-a2c1-9feeb1dc79b6-093593.png" alt="image.png"></p>
+<h3 id="模式总结"><a href="#模式总结" class="headerlink" title="模式总结"></a>模式总结</h3><p><img src="/blog/./img/uibKYqkdeb-JiITp/1705447725856-b7425660-9423-4e8a-8de3-6fdd476b8e18-249503.png" alt="image.png"></p>
+<h3 id="大小端"><a href="#大小端" class="headerlink" title="大小端"></a>大小端</h3><p>在SPI（Serial Peripheral Interface）通信中，MSB（Most Significant Bit）和LSB（Least Significant Bit）是指数据字节的高位（最高有效位）和低位（最低有效位）。它们用于描述数据位的传输顺序，即哪个数据位首先被发送或接收。</p>
+<ul>
+<li>MSB First: 在这种模式下，SPI通信从数据字节的最高有效位（MSB）开始传输，依次传输到最低有效位（LSB）。这是SPI通信的默认模式，也是最常见的模式。大多数SPI设备都使用此模式。</li>
+<li>LSB First: 在这种模式下，SPI通信从数据字节的最低有效位（LSB）开始传输，依次传输到最高有效位（MSB）。这种模式较少见，通常在特定应用或特定SPI设备中使用。</li>
+</ul>
+<p>通常，SPI设备的数据手册或规格书会明确指定它们使用的位传输顺序，以便正确配置主设备（通常是微控制器或微处理器）的SPI控制器。确保主设备的位传输顺序与所连接的SPI设备的要求相匹配非常重要，否则通信可能会导致错误或数据丢失。大多数SPI控制器都允许配置MSB或LSB传输顺序以适应不同的设备需求。<br><img src="/blog/./img/uibKYqkdeb-JiITp/1703942396804-166e7576-6444-4781-aee0-8767f9931ad8-321334.png" alt="image.png"></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/" title="SPI的原理">https://gaojiajie1993.github.io/blog/2023/04/13/嵌入式/SPI原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/ARM/" rel="tag"># ARM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2023/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/ADC%E7%B3%BB%E7%BB%9F%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="prev" title="ADC系统工作原理">
+                  <i class="fa fa-chevron-left"></i> ADC系统工作原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/" rel="next" title="WDGT看门狗">
+                  WDGT看门狗 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"b33f0aabb021beeb78f86e2ab6a91630"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

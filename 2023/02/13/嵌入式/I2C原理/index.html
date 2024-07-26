@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="学习目标 理解I2C通讯原理 理解I2C通讯过程中的信号 理解软件I2C实现过程 理解硬件I2C的工作内容  学习内容在消费电子、工业电子等领域，会使用各种类型的芯片，如微控制器、电源管理、显示驱动、传感器、存储器、转换器等，它们有着不同的功能。有时需要快速地进行数据交互。为了使用最简单的方式使这些芯片互联互通，I2C（Inter-Integrated Circuit）协议应运而生。I2C协议（或">
+<meta property="og:type" content="article">
+<meta property="og:title" content="I2C原理">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="学习目标 理解I2C通讯原理 理解I2C通讯过程中的信号 理解软件I2C实现过程 理解硬件I2C的工作内容  学习内容在消费电子、工业电子等领域，会使用各种类型的芯片，如微控制器、电源管理、显示驱动、传感器、存储器、转换器等，它们有着不同的功能。有时需要快速地进行数据交互。为了使用最简单的方式使这些芯片互联互通，I2C（Inter-Integrated Circuit）协议应运而生。I2C协议（或">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1693004679047-f9072633-9881-4b20-8ff0-efc3d0552d2c-071295.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692684001980-9b05b646-b26e-41a6-b130-d9b38e32f427-213969.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692684487988-b04deeb4-4a9e-4177-a5d2-ed2f2d42c778-644955.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692704773381-41ab86e4-dff9-4855-9dd9-7821ea7f8082-597307.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692705254902-76106bc1-3b72-4cc1-a668-59dad952889f-548848.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692754887377-e329e9d8-087c-4d6d-b4b9-f482c781bd5a-399672.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1698574488410-ae4a0f65-351c-4629-ae2d-33ec6dfbee8c-804801.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1700827647473-020fe787-9f98-4895-8b74-13e66214ef94-082011.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1692764098383-afbb2c9f-eb98-4419-b709-a1d9817728ff-688987.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1698624101531-4a7a4168-c85e-4b62-98ae-a247f54ae96c-638595.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1703667359328-9e151fc5-c04c-4691-91c1-dfadefac41b5-069763.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1703667365892-e9295ead-62a8-461f-82b8-fd0405347199-828447.png">
+<meta property="article:published_time" content="2023-02-13T05:26:20.000Z">
+<meta property="article:modified_time" content="2024-07-26T04:59:10.866Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gaojiajie1993.github.io/blog/img/aWNMltRleYdeWUnG/1693004679047-f9072633-9881-4b20-8ff0-efc3d0552d2c-071295.png">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86/","path":"2023/02/13/嵌入式/I2C原理/","title":"I2C原理"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>I2C原理 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">学习目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E5%86%85%E5%AE%B9"><span class="nav-number">2.</span> <span class="nav-text">学习内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#I2C%E9%80%9A%E8%AE%AF%E8%A7%84%E5%88%99"><span class="nav-number">2.1.</span> <span class="nav-text">I2C通讯规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I2C%E5%86%99%E6%93%8D%E4%BD%9C"><span class="nav-number">2.2.</span> <span class="nav-text">I2C写操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I2C%E8%AF%BB%E6%B5%81%E7%A8%8B"><span class="nav-number">2.3.</span> <span class="nav-text">I2C读流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%AE%AF%E4%BF%A1%E5%8F%B7"><span class="nav-number">2.4.</span> <span class="nav-text">通讯信号</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%BC%80%E5%A7%8B"><span class="nav-number">2.4.1.</span> <span class="nav-text">开始</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BB%93%E6%9D%9F"><span class="nav-number">2.4.2.</span> <span class="nav-text">结束</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E6%95%B0%E6%8D%AE"><span class="nav-number">2.4.3.</span> <span class="nav-text">发送数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#bit%E5%8F%91%E9%80%81"><span class="nav-number">2.4.3.1.</span> <span class="nav-text">bit发送</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Byte%E5%8F%91%E9%80%81"><span class="nav-number">2.4.3.2.</span> <span class="nav-text">Byte发送</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AD%89%E5%BE%85%E5%93%8D%E5%BA%94"><span class="nav-number">2.4.4.</span> <span class="nav-text">等待响应</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8E%A5%E6%94%B6%E6%95%B0%E6%8D%AE"><span class="nav-number">2.4.5.</span> <span class="nav-text">接收数据</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#bit%E6%8E%A5%E6%94%B6"><span class="nav-number">2.4.5.1.</span> <span class="nav-text">bit接收</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Byte%E6%8E%A5%E6%94%B6"><span class="nav-number">2.4.5.2.</span> <span class="nav-text">Byte接收</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%91%E9%80%81%E5%93%8D%E5%BA%94"><span class="nav-number">2.4.6.</span> <span class="nav-text">发送响应</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="I2C原理 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          I2C原理<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2023-02-13 13:26:20" itemprop="dateCreated datePublished" datetime="2023-02-13T13:26:20+08:00">2023-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 12:59:10" itemprop="dateModified" datetime="2024-07-26T12:59:10+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ol>
+<li>理解I2C通讯原理</li>
+<li>理解I2C通讯过程中的信号</li>
+<li>理解软件I2C实现过程</li>
+<li>理解硬件I2C的工作内容</li>
+</ol>
+<h2 id="学习内容"><a href="#学习内容" class="headerlink" title="学习内容"></a>学习内容</h2><p>在消费电子、工业电子等领域，会使用各种类型的芯片，如微控制器、电源管理、显示驱动、传感器、存储器、转换器等，它们有着不同的功能。有时需要快速地进行数据交互。为了使用最简单的方式使这些芯片互联互通，I2C（Inter-Integrated Circuit）协议应运而生。<br><strong>I2C协议（或称IIC）</strong>是由飞利浦（现在的恩智浦半导体）公司开发的一种通用的总线协议。它使用两根线（时钟线和数据线）来传输数据，支持多个设备共享同一条总线。 I2C协议通常用于连接微控制器、传感器、存储器和其他外围设备。</p>
+<h3 id="I2C通讯规则"><a href="#I2C通讯规则" class="headerlink" title="I2C通讯规则"></a>I2C通讯规则</h3><p><img src="/blog/./img/aWNMltRleYdeWUnG/1693004679047-f9072633-9881-4b20-8ff0-efc3d0552d2c-071295.png" alt="041.png"><br>I2C总线包括两根信号线：SDA（串行数据线）和SCL（串行时钟线）。这两根信号线共用一个总线，因此在总线上可以连接多个设备。在I2C总线上，每个设备都有一个唯一的地址，用于标识设备。<br>SCL线是时钟线，用于控制数据传输的速度和时序；SDA线是数据线，用于传输实际的数据.</p>
+<h3 id="I2C写操作"><a href="#I2C写操作" class="headerlink" title="I2C写操作"></a>I2C写操作</h3><p>流程如下:</p>
+<ol>
+<li>开始。</li>
+<li>发送设备地址，等待从设备响应</li>
+<li>发送寄存器地址，等待从设备响应</li>
+<li>发送一个字节，等待从设备响应。这个操作是循环执行，直到没有数据。</li>
+<li>停止。</li>
+</ol>
+<p><img src="/blog/./img/aWNMltRleYdeWUnG/1692684001980-9b05b646-b26e-41a6-b130-d9b38e32f427-213969.png" alt="031.png"></p>
+<h3 id="I2C读流程"><a href="#I2C读流程" class="headerlink" title="I2C读流程"></a>I2C读流程</h3><p>流程如下：</p>
+<ol>
+<li>开始。</li>
+<li>发送设备地址（写地址），等待从设备响应</li>
+<li>发送寄存器地址，等待从设备响应。</li>
+<li>开始</li>
+<li>发送设备地址（读地址），等待从设备响应</li>
+<li>接收一个字节，发送响应给从设备。这个操作是循环执行，直到没有数据。当是最后一个数据时，发送空响应。</li>
+<li>停止。</li>
+</ol>
+<p><img src="/blog/./img/aWNMltRleYdeWUnG/1692684487988-b04deeb4-4a9e-4177-a5d2-ed2f2d42c778-644955.png" alt="32.png"></p>
+<h3 id="通讯信号"><a href="#通讯信号" class="headerlink" title="通讯信号"></a>通讯信号</h3><h4 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h4><p><img src="/blog/./img/aWNMltRleYdeWUnG/1692704773381-41ab86e4-dff9-4855-9dd9-7821ea7f8082-597307.png" alt="033.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">start</span><span class="params">()</span> &#123;</span><br><span class="line">    SDA_OUT();</span><br><span class="line"></span><br><span class="line">    SDA(<span class="number">1</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">    SCL(<span class="number">1</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">    SDA(<span class="number">0</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">    SCL(<span class="number">0</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="结束"><a href="#结束" class="headerlink" title="结束"></a>结束</h4><p><img src="/blog/./img/aWNMltRleYdeWUnG/1692705254902-76106bc1-3b72-4cc1-a668-59dad952889f-548848.png" alt="034.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">stop</span><span class="params">()</span> &#123;</span><br><span class="line">    SDA_OUT();</span><br><span class="line"></span><br><span class="line">    SCL(<span class="number">0</span>);</span><br><span class="line">    SDA(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">    SCL(<span class="number">1</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">    SDA(<span class="number">1</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="发送数据"><a href="#发送数据" class="headerlink" title="发送数据"></a>发送数据</h4><h5 id="bit发送"><a href="#bit发送" class="headerlink" title="bit发送"></a>bit发送</h5><p><img src="/blog/./img/aWNMltRleYdeWUnG/1692754887377-e329e9d8-087c-4d6d-b4b9-f482c781bd5a-399672.png" alt="035.png"><br>数据有效性：</p>
+<ul>
+<li>SCL上升沿到下降沿这个阶段，SDA电平的高低，表示数据bit的1和0</li>
+<li>如果SDA电平在这个阶段发生变化，则无效，参考start和stop信号。</li>
+</ul>
+<h5 id="Byte发送"><a href="#Byte发送" class="headerlink" title="Byte发送"></a>Byte发送</h5><p>基于数据有效性，将byte按bit位变化为高低电平，发送出去。<br><img src="/blog/./img/aWNMltRleYdeWUnG/1698574488410-ae4a0f65-351c-4629-ae2d-33ec6dfbee8c-804801.png" alt="091.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">send</span><span class="params">(<span class="type">uint8_t</span> data)</span> &#123;</span><br><span class="line">    <span class="type">uint8_t</span> i;</span><br><span class="line">    SDA_OUT();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span>(data &amp; <span class="number">0x80</span>) &#123;</span><br><span class="line">            SDA(<span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            SDA(<span class="number">0</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        SCL(<span class="number">1</span>);</span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line">        SCL(<span class="number">0</span>);</span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line">        data &lt;&lt;= <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="等待响应"><a href="#等待响应" class="headerlink" title="等待响应"></a>等待响应</h4><p>wait ack：_Ack_nowledge character。表示等待响应，每发送一个数据，需要确认对方是否收到，就需要等待对方响应。<br><img src="/blog/./img/aWNMltRleYdeWUnG/1700827647473-020fe787-9f98-4895-8b74-13e66214ef94-082011.png" alt="image.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">wait_ack</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int8_t</span> retry = <span class="number">10</span>;</span><br><span class="line"></span><br><span class="line">    SCL(<span class="number">0</span>);</span><br><span class="line">    SDA(<span class="number">1</span>);</span><br><span class="line">    SDA_IN();</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line">    SCL(<span class="number">1</span>);</span><br><span class="line">    delay_1us(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(SDA_STATE() == <span class="number">1</span> &amp;&amp; retry &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        retry --;</span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(retry &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">        stop();</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        SCL(<span class="number">0</span>);</span><br><span class="line">        SDA_OUT();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a>接收数据</h4><h5 id="bit接收"><a href="#bit接收" class="headerlink" title="bit接收"></a>bit接收</h5><p><img src="/blog/./img/aWNMltRleYdeWUnG/1692764098383-afbb2c9f-eb98-4419-b709-a1d9817728ff-688987.png" alt="039.png"></p>
+<h5 id="Byte接收"><a href="#Byte接收" class="headerlink" title="Byte接收"></a>Byte接收</h5><p><img src="/blog/./img/aWNMltRleYdeWUnG/1698624101531-4a7a4168-c85e-4b62-98ae-a247f54ae96c-638595.png" alt="092.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> <span class="title function_">recv</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">uint8_t</span> i, data;</span><br><span class="line">    SDA_IN();</span><br><span class="line">    data = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">8</span>; i++) &#123;</span><br><span class="line">        SCL(<span class="number">0</span>);</span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line">        SCL(<span class="number">1</span>);</span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        data &lt;&lt;= <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        data |= SDA_STATE();</span><br><span class="line"></span><br><span class="line">        delay_1us(<span class="number">5</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    SCL(<span class="number">0</span>);</span><br><span class="line">    <span class="keyword">return</span> data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="发送响应"><a href="#发送响应" class="headerlink" title="发送响应"></a>发送响应</h4><p><img src="/blog/./img/aWNMltRleYdeWUnG/1703667359328-9e151fc5-c04c-4691-91c1-dfadefac41b5-069763.png" alt="image.png"><img src="/blog/./img/aWNMltRleYdeWUnG/1703667365892-e9295ead-62a8-461f-82b8-fd0405347199-828447.png" alt="image.png"></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">send_ack</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="comment">// 主机发送ACK响应</span></span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 主机获取SDA控制权，进入输出模式</span></span><br><span class="line">	SDA_OUT();</span><br><span class="line">	<span class="comment">// 拉低SDA</span></span><br><span class="line">	SDA(<span class="number">0</span>);</span><br><span class="line">	DELAY();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 拉高SCL</span></span><br><span class="line">	SCL(<span class="number">1</span>);</span><br><span class="line">	DELAY();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 拉低SCL</span></span><br><span class="line">	SCL(<span class="number">0</span>);</span><br><span class="line">	DELAY();	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">send_nack</span><span class="params">()</span>&#123;</span><br><span class="line">	<span class="comment">// 主机发送NACK响应</span></span><br><span class="line">	<span class="comment">// 主机获取SDA控制权，进入输出模式</span></span><br><span class="line">	SDA_OUT();</span><br><span class="line">	<span class="comment">// 拉高SDA</span></span><br><span class="line">	SDA(<span class="number">1</span>);</span><br><span class="line">	DELAY();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 拉高SCL</span></span><br><span class="line">	SCL(<span class="number">1</span>);</span><br><span class="line">	DELAY();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 拉低SCL</span></span><br><span class="line">	SCL(<span class="number">0</span>);</span><br><span class="line">	DELAY();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/I2C%E5%8E%9F%E7%90%86/" title="I2C原理">https://gaojiajie1993.github.io/blog/2023/02/13/嵌入式/I2C原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/ARM/" rel="tag"># ARM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2023/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/DMA/" rel="prev" title="DMA">
+                  <i class="fa fa-chevron-left"></i> DMA
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2023/02/13/Python/QtDesigner/" rel="next" title="Qt Designer">
+                  Qt Designer <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"da84b2370b565f8e7b05e207bb228bfd"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="学习目标 了解什么是看门狗 了解看门狗工作原理 了解ARM的独立看门狗和窗口看门狗 掌握看门狗初始化和喂狗  学习内容什么是看门狗看门狗（Watchdog）是一种用于监视系统运行情况的硬件设备，本质就是一个倒计时计数器。它能定时检测系统是否正常运行,并在系统出现故障或者卡死时自动重启系统，从而保证系统的稳定性和可靠性。其基本原理是定期接收来自主控芯片的”喂狗信号”,如果在规定的时间内没有接收到信号">
+<meta property="og:type" content="article">
+<meta property="og:title" content="WDGT看门狗">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="学习目标 了解什么是看门狗 了解看门狗工作原理 了解ARM的独立看门狗和窗口看门狗 掌握看门狗初始化和喂狗  学习内容什么是看门狗看门狗（Watchdog）是一种用于监视系统运行情况的硬件设备，本质就是一个倒计时计数器。它能定时检测系统是否正常运行,并在系统出现故障或者卡死时自动重启系统，从而保证系统的稳定性和可靠性。其基本原理是定期接收来自主控芯片的”喂狗信号”,如果在规定的时间内没有接收到信号">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1703773872655-81527ac5-ff63-49bd-8e83-54f7b9618440-445912.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1716597950167-db5e2ab3-e156-40e7-a58c-968de629b3b8-485873.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1703816007975-22620bff-d943-4e3f-af74-1e6acff5ed20-585266.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1698511920256-b8d311ea-43b1-4497-be9b-dc4d9c226618-271861.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1703816793980-1a3539c0-9e38-4608-a4de-9d590ac85206-732405.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1703816805774-e68ca511-8b5f-4059-9326-a5e953c1a87d-098375.png">
+<meta property="article:published_time" content="2024-02-13T05:26:20.000Z">
+<meta property="article:modified_time" content="2024-07-26T05:02:05.682Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gaojiajie1993.github.io/blog/img/a5yioQTES3HTBGDr/1703773872655-81527ac5-ff63-49bd-8e83-54f7b9618440-445912.png">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/","path":"2024/02/13/嵌入式/WDGT看门狗/","title":"WDGT看门狗"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>WDGT看门狗 | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E7%9B%AE%E6%A0%87"><span class="nav-number">1.</span> <span class="nav-text">学习目标</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E5%86%85%E5%AE%B9"><span class="nav-number">2.</span> <span class="nav-text">学习内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%9C%8B%E9%97%A8%E7%8B%97"><span class="nav-number">2.1.</span> <span class="nav-text">什么是看门狗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ARM%E4%B8%AD%E7%9A%84%E7%9C%8B%E9%97%A8%E7%8B%97"><span class="nav-number">2.2.</span> <span class="nav-text">ARM中的看门狗</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%8B%AC%E7%AB%8B%E7%9C%8B%E9%97%A8%E7%8B%97%E5%AE%9A%E6%97%B6%E5%99%A8"><span class="nav-number">2.2.1.</span> <span class="nav-text">独立看门狗定时器</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E7%9C%8B%E9%97%A8%E7%8B%97%E5%AE%9A%E6%97%B6%E5%99%A8"><span class="nav-number">2.2.2.</span> <span class="nav-text">窗口看门狗定时器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%8B%AC%E7%AB%8B%E7%9C%8B%E9%97%A8%E7%8B%97FWDGT"><span class="nav-number">2.3.</span> <span class="nav-text">独立看门狗FWDGT</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E9%85%8D%E7%BD%AE"><span class="nav-number">2.3.1.</span> <span class="nav-text">初始化配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%96%82%E7%8B%97"><span class="nav-number">2.3.2.</span> <span class="nav-text">喂狗</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81"><span class="nav-number">2.3.3.</span> <span class="nav-text">完整代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AA%97%E5%8F%A3%E7%9C%8B%E9%97%A8%E7%8B%97WWDGT"><span class="nav-number">2.4.</span> <span class="nav-text">窗口看门狗WWDGT</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E9%85%8D%E7%BD%AE-1"><span class="nav-number">2.4.1.</span> <span class="nav-text">初始化配置</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%96%82%E7%8B%97-1"><span class="nav-number">2.4.2.</span> <span class="nav-text">喂狗</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E4%BB%A3%E7%A0%81-1"><span class="nav-number">2.4.3.</span> <span class="nav-text">完整代码</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">2.5.</span> <span class="nav-text">注意</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="WDGT看门狗 | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          WDGT看门狗<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-02-13 13:26:20" itemprop="dateCreated datePublished" datetime="2024-02-13T13:26:20+08:00">2024-02-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 13:02:05" itemprop="dateModified" datetime="2024-07-26T13:02:05+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="学习目标"><a href="#学习目标" class="headerlink" title="学习目标"></a>学习目标</h2><ul>
+<li>了解什么是看门狗</li>
+<li>了解看门狗工作原理</li>
+<li>了解ARM的独立看门狗和窗口看门狗</li>
+<li>掌握看门狗初始化和喂狗</li>
+</ul>
+<h2 id="学习内容"><a href="#学习内容" class="headerlink" title="学习内容"></a>学习内容</h2><h3 id="什么是看门狗"><a href="#什么是看门狗" class="headerlink" title="什么是看门狗"></a>什么是看门狗</h3><p>看门狗（Watchdog）是一种用于监视系统运行情况的硬件设备，本质就是一个倒计时计数器。它能定时检测系统是否正常运行,并在系统出现故障或者卡死时自动重启系统，从而保证系统的稳定性和可靠性。<br>其基本原理是定期接收来自主控芯片的”喂狗信号”,如果在规定的时间内没有接收到信号,硬件看门狗将会	<br>触发系统复位,重新启动整个系统。<br><img src="/blog/./img/a5yioQTES3HTBGDr/1703773872655-81527ac5-ff63-49bd-8e83-54f7b9618440-445912.png" alt="image.png"><br>硬件看门狗特别适合用于远程或无人值守的系统设备中,它能确保系统在出现故障时及时自动重启减少停机时间并提高系统的可用性。这在一些关键的嵌入式系统、服务器、网络设备等领域非常重要。</p>
+<p>看门狗（Watchdog）在嵌入式系统中起着至关重要的作用，它通常是一种硬件计时器或计数器，用于监控系统的运行情况。其作用和重要性包括以下几个方面：</p>
+<ol>
+<li><strong>系统健壮性和稳定性</strong>： 看门狗能够监控系统的运行状态，一旦系统出现故障、死锁或意外情况，可以通过重启系统来恢复正常运行，确保系统的稳定性和可靠性。</li>
+<li><strong>防止死锁和程序错误</strong>： 当程序发生死循环、意外暂停或其他异常情况时，看门狗可以检测到系统无响应的状态并执行重启操作，从而防止系统永久性死锁。</li>
+<li><strong>系统保护和数据完整性</strong>： 通过定期喂狗操作，可以确保系统在正常运行期间不会因软件或硬件故障而丢失关键数据，从而保护系统的数据完整性和稳定性。</li>
+<li><strong>实时系统保障</strong>： 对于实时系统而言，看门狗可以帮助确保系统在规定的时间内完成任务，若任务未能及时完成，可以执行重启操作以确保系统的实时性能。</li>
+</ol>
+<p>看门狗在嵌入式系统中的作用和重要性体现在提高系统的稳定性、保护数据完整性、预防死锁和程序错误、保障实时系统性能等方面。它是确保嵌入式系统安全可靠运行的重要保障手段之一。</p>
+<h3 id="ARM中的看门狗"><a href="#ARM中的看门狗" class="headerlink" title="ARM中的看门狗"></a>ARM中的看门狗</h3><h4 id="独立看门狗定时器"><a href="#独立看门狗定时器" class="headerlink" title="独立看门狗定时器"></a>独立看门狗定时器</h4><p>有独立时钟源（IRC32K）。即使主时钟失效，FWDGT依然能保持正常工作状态，适用于需要独立环境且对计时精度要求不高的场合。<br>当内部向下计数器的计数值达到0，独立看门狗会产生一个系统复位。使能独立看门狗的寄存器写保护功能可以避免寄存器的值被意外的配置篡改。<br><img src="/blog/./img/a5yioQTES3HTBGDr/1716597950167-db5e2ab3-e156-40e7-a58c-968de629b3b8-485873.png" alt="image.png"><br><img src="/blog/./img/a5yioQTES3HTBGDr/1703816007975-22620bff-d943-4e3f-af74-1e6acff5ed20-585266.png" alt="image.png"></p>
+<h4 id="窗口看门狗定时器"><a href="#窗口看门狗定时器" class="headerlink" title="窗口看门狗定时器"></a>窗口看门狗定时器</h4><p>用来监测由软件故障导致的系统故障。窗口看门狗定时器开启后，7位向下递减计数器值逐渐减小。计数值达到0x3F时会产生系统复位（CNT[6]位被清0）。在计数器计数值达到窗口寄存器值之前，计数器的更新也会产生复位。因此软件需要在给定的区间内更新计数器。窗口看门狗定时器在计数器计数值达到0x40会产生一个提前唤醒标志，如果使能中断将会产生中断。窗口看门狗定时器时钟是由APB1时钟预分频而来。窗口看门狗定时器适用于需要精确计时的场合。<br><img src="/blog/./img/a5yioQTES3HTBGDr/1698511920256-b8d311ea-43b1-4497-be9b-dc4d9c226618-271861.png" alt="083.png"><br><img src="/blog/./img/a5yioQTES3HTBGDr/1703816793980-1a3539c0-9e38-4608-a4de-9d590ac85206-732405.png" alt="image.png"><br><img src="/blog/./img/a5yioQTES3HTBGDr/1703816805774-e68ca511-8b5f-4059-9326-a5e953c1a87d-098375.png" alt="image.png"></p>
+<h3 id="独立看门狗FWDGT"><a href="#独立看门狗FWDGT" class="headerlink" title="独立看门狗FWDGT"></a>独立看门狗FWDGT</h3><p>free watchdog timer</p>
+<h4 id="初始化配置"><a href="#初始化配置" class="headerlink" title="初始化配置"></a>初始化配置</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">wtd_config</span><span class="params">()</span> &#123;</span><br><span class="line">    rcu_osci_on(RCU_IRC32K);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">while</span>( SUCCESS != rcu_osci_stab_wait(RCU_IRC32K) )&#123;  &#125;</span><br><span class="line">    </span><br><span class="line">    fwdgt_config( <span class="number">1000</span>,  FWDGT_PSC_DIV64);</span><br><span class="line">    </span><br><span class="line">    fwdgt_enable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>/* confiure FWDGT counter clock: 32KHz(IRC32K) / 64 = 0.5 KHz */</code><br>独立看门狗计数时钟计算：</p>
+<ul>
+<li>独立看门狗具备独立晶振：32KHZ</li>
+<li>FWDGT_PSC_DIVx: x为分频系数，意思是降低晶振频率。例如为64时，32khz&#x2F;64 &#x3D; 0.5khz &#x3D; 500hz，表示的是1秒钟计数500次。</li>
+<li>fwdgt_config(2 * 500, FWDGT_PSC_DIV64); 中的第一个参数就是计数值，通过分频我们可以知道1秒钟计数500次，那么我要设置为n秒，就需要 n*500的计数值。</li>
+</ul>
+<h4 id="喂狗"><a href="#喂狗" class="headerlink" title="喂狗"></a>喂狗</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fwdgt_counter_reload();</span><br></pre></td></tr></table></figure>
+
+<h4 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;gd32f4xx.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;systick.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Usart0.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_on_recv</span><span class="params">(<span class="type">uint8_t</span>* data, <span class="type">uint32_t</span> len)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;recv: %s\r\n&quot;</span>, data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">wtd_config</span><span class="params">()</span> &#123;</span><br><span class="line">    fwdgt_config(<span class="number">2</span> * <span class="number">500</span>, FWDGT_PSC_DIV64);</span><br><span class="line">    fwdgt_enable();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    systick_config();</span><br><span class="line">    Usart0_init();</span><br><span class="line"></span><br><span class="line">    wtd_config();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;start\r\n&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line"></span><br><span class="line">        delay_1ms(<span class="number">960</span>); <span class="comment">// 重启</span></span><br><span class="line">        <span class="comment">// delay_1ms(450); // 正常</span></span><br><span class="line">        <span class="comment">/* reed dog */</span></span><br><span class="line">        fwdgt_counter_reload();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="窗口看门狗WWDGT"><a href="#窗口看门狗WWDGT" class="headerlink" title="窗口看门狗WWDGT"></a>窗口看门狗WWDGT</h3><h4 id="初始化配置-1"><a href="#初始化配置-1" class="headerlink" title="初始化配置"></a>初始化配置</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">wtd_config</span><span class="params">()</span> &#123;</span><br><span class="line">    rcu_periph_clock_enable(RCU_WWDGT);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     *  System clock up to 168Mhz, PCLK1=42MHz </span></span><br><span class="line"><span class="comment">     *  set WWDGT clock = (PCLK1 (42MHz)/4096)/4 = 2563.5Hz (0.39ms)  </span></span><br><span class="line"><span class="comment">     *  set counter value to 127</span></span><br><span class="line"><span class="comment">     *  set window value to 80</span></span><br><span class="line"><span class="comment">     *  refresh window is: 0.39ms * (127-80)  &lt; refresh window &lt;  0.39ms * (127-0x3F) </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    wwdgt_config(<span class="number">127</span>, <span class="number">80</span>, WWDGT_CFG_PSC_DIV4);</span><br><span class="line">    wwdgt_enable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>wwdgt_config(uint16_t counter, uint16_t window, uint32_t prescaler)</code>配置的是窗口时间，计算窗口时间是需要注意几个参数的含义。</p>
+<ul>
+<li>counter表示计数值，取值为0x00 - 0x7F</li>
+<li>window表示窗口值，取值为0x00 - 0x7F</li>
+<li>窗口区间的初始值最小为0x3F</li>
+<li>窗口计数是递减的，因此是 (counter - 初始值) 为最大时间计数，(counter - 窗口区间值)为最小时间计数</li>
+<li>一个时钟计数，通过 主频&#x2F;4096可以得到计数值，4096为12位向下计数器组成。</li>
+<li>窗口计数器通过分频，得到一个时钟计数，主频&#x2F;4096&#x2F;分频系数</li>
+</ul>
+<h4 id="喂狗-1"><a href="#喂狗-1" class="headerlink" title="喂狗"></a>喂狗</h4><h4 id="完整代码-1"><a href="#完整代码-1" class="headerlink" title="完整代码"></a>完整代码</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;gd32f4xx.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;systick.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Usart0.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_on_recv</span><span class="params">(<span class="type">uint8_t</span>* data, <span class="type">uint32_t</span> len)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;recv: %s\r\n&quot;</span>, data);</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">if</span>(data[<span class="number">0</span>] == <span class="number">0x04</span>)&#123;</span><br><span class="line">		<span class="comment">// 模拟卡死操作</span></span><br><span class="line">		<span class="keyword">while</span>(<span class="number">1</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">static</span> <span class="type">void</span> <span class="title function_">wtd_config</span><span class="params">()</span> &#123;</span><br><span class="line">    rcu_periph_clock_enable(RCU_WWDGT);</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     *  System clock up to 168Mhz, PCLK1=42MHz </span></span><br><span class="line"><span class="comment">     *  set WWDGT clock = (PCLK1 (60MHz)/4096)/4 = 2563.5Hz (0.39ms)   </span></span><br><span class="line"><span class="comment">     *  set counter value to 127</span></span><br><span class="line"><span class="comment">     *  set window value to 80</span></span><br><span class="line"><span class="comment">     *  </span></span><br><span class="line"><span class="comment">     </span></span><br><span class="line"><span class="comment">	窗口开始时间-&gt; (counter - window) * 1次计数耗时 =  (127 - 80) * 0.39ms = 18.33ms</span></span><br><span class="line"><span class="comment">	窗口结束时间-&gt; (counter - 	 0x3F) * 1次计数耗时 = (127 - 63) * 0.39ms = 24.96ms</span></span><br><span class="line"><span class="comment">	</span></span><br><span class="line"><span class="comment">	需要在窗口时间内喂狗, 否则会触发重启</span></span><br><span class="line"><span class="comment">	18.33ms &lt; duration &lt; 24.96ms</span></span><br><span class="line"><span class="comment">    </span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    wwdgt_config(<span class="number">127</span>, <span class="number">80</span>, WWDGT_CFG_PSC_DIV4);</span><br><span class="line">    wwdgt_enable();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    systick_config();</span><br><span class="line">    Usart0_init();</span><br><span class="line"></span><br><span class="line">    wtd_config();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;start\r\n&quot;</span>);</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">    	<span class="comment">// 18.33ms &lt; 安全期 &lt; 24.96ms</span></span><br><span class="line">        <span class="comment">//    delay_1ms(18);</span></span><br><span class="line">        delay_1ms(<span class="number">22</span>); <span class="comment">// 可以</span></span><br><span class="line">        <span class="comment">//    delay_1ms(26);</span></span><br><span class="line">        <span class="comment">/* update WWDGT counter */</span></span><br><span class="line">        wwdgt_counter_update(<span class="number">127</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>如果计算得到的窗口期和真实的运行结果不一致，要考虑<code>system_gd32f4xx.c</code>里配置的系统时钟是否是168M，即打开该文件，找到__SYSTEM_CLOCK_168M_PLL_8M_HXTAL，释放其注释，保持打开状态。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/WDGT%E7%9C%8B%E9%97%A8%E7%8B%97/" title="WDGT看门狗">https://gaojiajie1993.github.io/blog/2024/02/13/嵌入式/WDGT看门狗/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/ARM/" rel="tag"># ARM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2023/04/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/SPI%E5%8E%9F%E7%90%86/" rel="prev" title="SPI的原理">
+                  <i class="fa fa-chevron-left"></i> SPI的原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/USART%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86/" rel="next" title="USART通信原理">
+                  USART通信原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"9018832e5e3b3794f844ea538785c1ea"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

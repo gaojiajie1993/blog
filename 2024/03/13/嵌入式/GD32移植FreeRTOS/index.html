@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/uploads/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/uploads/favicon.ico">
+  <link rel="mask-icon" href="/blog/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/blog/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.3.0/css/all.min.css" integrity="sha256-/4UQcSmErDzPCMAiuOiWPVVsNN2s3ZY/NsmXNcj0IFc=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous"></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"gaojiajie1993.github.io","root":"/blog/","images":"/blog/images","scheme":"Pisces","darkmode":true,"version":"8.15.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gitalk","storage":true,"lazyload":true,"nav":null,"activeClass":"gitalk"},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/blog/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/blog/js/config.js"></script>
+
+    <meta name="description" content="准备工作 GD32开发板。案例是以梁山派为开发板。 Windows系统的电脑。当前是以Win11的电脑来实现案例的。 Keil开发工具。并且已经安装好GD32依赖环境。 FreeRTOS源码包。下载地址为: https:&#x2F;&#x2F;github.com&#x2F;FreeRTOS&#x2F;FreeRTOS&#x2F;releases  当前以FreeRTOSv202212.01版本为例。也是目前的最新版本。 移植流程项目基础环境准备">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GD32移植FreeRTOS">
+<meta property="og:url" content="https://gaojiajie1993.github.io/blog/2024/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS/index.html">
+<meta property="og:site_name" content="JiaJie Gao Blog">
+<meta property="og:description" content="准备工作 GD32开发板。案例是以梁山派为开发板。 Windows系统的电脑。当前是以Win11的电脑来实现案例的。 Keil开发工具。并且已经安装好GD32依赖环境。 FreeRTOS源码包。下载地址为: https:&#x2F;&#x2F;github.com&#x2F;FreeRTOS&#x2F;FreeRTOS&#x2F;releases  当前以FreeRTOSv202212.01版本为例。也是目前的最新版本。 移植流程项目基础环境准备">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687923196781-21edcf73-f475-4c52-a3a7-d38deb00c137-158289.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687923844283-5e4f049e-1557-41de-88a0-05a7430f1d5e-156153.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924087070-448cfd32-2440-4105-965a-df76c16419cf-531085.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924122362-6578a6c1-1cbb-4947-960f-67a283773fcd-726838.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924267297-dd68df63-cbfb-43e0-90bc-bbabf77d9b7f-500317.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924288646-310c0756-2d27-4a5c-a0dc-cd7a085af725-093060.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924446506-043d616a-6665-498f-a4ab-44aac359783f-006134.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924670075-06a4edf0-4e5d-4522-8c0a-a4ff23b4af08-828618.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687924874970-0ef06487-557c-472d-94af-6c7bf305a046-621043.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687925151042-00b53bce-6a07-4678-a514-c9010255cd8e-395035.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687925371537-7e217525-e531-4bf0-b63b-39a7175b3e07-950867.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687926509097-7e90d55b-6609-41a5-a04b-2ff7a5f3f2a7-601234.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687926532303-133ff207-3b9d-42a0-afd1-0fbba432f870-286233.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687926975547-79becb59-dd1c-4587-a455-dae00f113210-877734.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687926988880-1ecffdbf-8eae-4acd-bed4-f8a279d563dc-771581.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687927187496-6d9fccb9-f9e9-4582-935f-8f22cb3f7de4-346370.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687927433261-44142497-779b-4f71-8457-18f757d28a33-589522.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687930820306-a7eb2cb5-9654-4e4b-b5f0-7402b81d0b73-536565.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687930994065-6323ead0-5d9d-430a-b72a-b799f5f4e8ca-626144.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687931076202-385101d9-dd83-407e-996e-dd2f061ff476-706908.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687931186520-81763c9d-2102-460f-8031-8156b8ebdafb-515148.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687931381052-97d9b808-8911-4c1f-93c5-75cfb0229a3d-180286.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687931808337-ccbcad71-d211-43e7-81bf-7ff69f49f0fa-444067.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687932362934-eae18705-bdd3-407a-870c-f2ec5b40cd1c-801070.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687932447985-53a60db7-0af4-4136-93b7-8e92c672f0ac-143115.png">
+<meta property="og:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687933164629-1f6eecf8-0917-4883-a7b9-7b4058a9bc37-582793.png">
+<meta property="article:published_time" content="2024-03-13T05:26:20.000Z">
+<meta property="article:modified_time" content="2024-07-26T05:01:17.537Z">
+<meta property="article:author" content="JiaJie Gao">
+<meta property="article:tag" content="ARM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gaojiajie1993.github.io/blog/img/iH8LOSDeXYxuWXus/1687923196781-21edcf73-f475-4c52-a3a7-d38deb00c137-158289.png">
+
+
+<link rel="canonical" href="https://gaojiajie1993.github.io/blog/2024/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://gaojiajie1993.github.io/blog/2024/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS/","path":"2024/03/13/嵌入式/GD32移植FreeRTOS/","title":"GD32移植FreeRTOS"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>GD32移植FreeRTOS | JiaJie Gao Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/blog/css/noscript.css">
+  </noscript>
+<style>.darkmode--activated{--body-bg-color:#282828;--content-bg-color:#333;--card-bg-color:#555;--text-color:#ccc;--blockquote-color:#bbb;--link-color:#ccc;--link-hover-color:#eee;--brand-color:#ddd;--brand-hover-color:#ddd;--table-row-odd-bg-color:#282828;--table-row-hover-bg-color:#363636;--menu-item-bg-color:#555;--btn-default-bg:#222;--btn-default-color:#ccc;--btn-default-border-color:#555;--btn-default-hover-bg:#666;--btn-default-hover-color:#ccc;--btn-default-hover-border-color:#666;--highlight-background:#282b2e;--highlight-foreground:#a9b7c6;--highlight-gutter-background:#34393d;--highlight-gutter-foreground:#9ca9b6}.darkmode--activated img{opacity:.75}.darkmode--activated img:hover{opacity:.9}.darkmode--activated code{color:#69dbdc;background:0 0}button.darkmode-toggle{z-index:9999}.darkmode-ignore,img{display:flex!important}.beian img{display:inline-block!important}</style></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/blog/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">JiaJie Gao Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">沿途的风景是多么美好</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/blog/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/blog/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/blog/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">27</span></a></li><li class="menu-item menu-item-categories"><a href="/blog/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">11</span></a></li><li class="menu-item menu-item-archives"><a href="/blog/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">173</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%86%E5%A4%87%E5%B7%A5%E4%BD%9C"><span class="nav-number">1.</span> <span class="nav-text">准备工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A7%BB%E6%A4%8D%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">移植流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%9F%BA%E7%A1%80%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="nav-number">2.1.</span> <span class="nav-text">项目基础环境准备</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FreeRTOS%E7%A7%BB%E6%A4%8D"><span class="nav-number">2.2.</span> <span class="nav-text">FreeRTOS移植</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#FreeRTOS%E6%BA%90%E7%A0%81%E8%A3%81%E5%89%AA"><span class="nav-number">2.2.1.</span> <span class="nav-text">FreeRTOS源码裁剪</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E7%9B%AE%E5%BD%95%E6%9E%84%E5%BB%BA"><span class="nav-number">2.2.2.</span> <span class="nav-text">源码目录构建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FreeRTOSConfig-h%E6%96%87%E4%BB%B6%E7%BC%BA%E5%A4%B1%E8%A7%A3%E5%86%B3"><span class="nav-number">2.2.3.</span> <span class="nav-text">FreeRTOSConfig.h文件缺失解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SystemCoreClock%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-number">2.2.4.</span> <span class="nav-text">SystemCoreClock问题解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#xxx-Handler%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-number">2.2.5.</span> <span class="nav-text">xxx_Handler问题解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vApplicationXXXHook%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3"><span class="nav-number">2.2.6.</span> <span class="nav-text">vApplicationXXXHook问题解决</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Systick%E7%A1%AC%E4%BB%B6delay"><span class="nav-number">2.2.7.</span> <span class="nav-text">Systick硬件delay</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LED%E7%82%B9%E4%BA%AE%E6%B5%8B%E8%AF%95"><span class="nav-number">2.3.</span> <span class="nav-text">LED点亮测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HelloWorld"><span class="nav-number">3.</span> <span class="nav-text">HelloWorld</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="JiaJie Gao"
+      src="/blog/uploads/avatar.gif">
+  <p class="site-author-name" itemprop="name">JiaJie Gao</p>
+  <div class="site-description" itemprop="description">个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/blog/archives/">
+          <span class="site-state-item-count">173</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/blog/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/blog/tags/">
+        <span class="site-state-item-count">27</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/gaojiajie1993" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;gaojiajie1993" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:gaojiajie1993@163.com" title="E-Mail → mailto:gaojiajie1993@163.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdn.jsdelivr.net/npm/@creativecommons/vocabulary@2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://gaojiajie1993.github.io/blog/2024/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/blog/uploads/avatar.gif">
+      <meta itemprop="name" content="JiaJie Gao">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JiaJie Gao Blog">
+      <meta itemprop="description" content="个人博客">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="GD32移植FreeRTOS | JiaJie Gao Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          GD32移植FreeRTOS<a href="https://github.com/gaojiajie1993/blog/blob/master/source/_posts/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS.md" class="post-edit-link" title="编辑" rel="noopener" target="_blank"><i class="fa fa-pen-nib"></i></a>
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-03-13 13:26:20" itemprop="dateCreated datePublished" datetime="2024-03-13T13:26:20+08:00">2024-03-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-07-26 13:01:17" itemprop="dateModified" datetime="2024-07-26T13:01:17+08:00">2024-07-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/blog/categories/%E5%B5%8C%E5%85%A5%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">嵌入式</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9.2k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ol>
+<li>GD32开发板。案例是以梁山派为开发板。</li>
+<li>Windows系统的电脑。当前是以Win11的电脑来实现案例的。</li>
+<li>Keil开发工具。并且已经安装好GD32依赖环境。</li>
+<li>FreeRTOS源码包。下载地址为: <a target="_blank" rel="noopener" href="https://github.com/FreeRTOS/FreeRTOS/releases">https://github.com/FreeRTOS/FreeRTOS/releases</a></li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687923196781-21edcf73-f475-4c52-a3a7-d38deb00c137-158289.png" alt="033.png"><br>当前以<code>FreeRTOSv202212.01</code>版本为例。也是目前的最新版本。</p>
+<h2 id="移植流程"><a href="#移植流程" class="headerlink" title="移植流程"></a>移植流程</h2><h3 id="项目基础环境准备"><a href="#项目基础环境准备" class="headerlink" title="项目基础环境准备"></a>项目基础环境准备</h3><p>新建项目名称为：<code>FreeRTOSTemplate</code><br>项目结构如下：<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687923844283-5e4f049e-1557-41de-88a0-05a7430f1d5e-156153.png" alt="034.png"><br>确保以下配置信息的正确性：</p>
+<ol>
+<li>Target的配置</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924087070-448cfd32-2440-4105-965a-df76c16419cf-531085.png" alt="035.png"></p>
+<ol start="2">
+<li>Output的配置</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924122362-6578a6c1-1cbb-4947-960f-67a283773fcd-726838.png" alt="036.png"></p>
+<ol start="3">
+<li>C&#x2F;C++(AC6)配置</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924267297-dd68df63-cbfb-43e0-90bc-bbabf77d9b7f-500317.png" alt="037.png"></p>
+<ol start="4">
+<li>Debug配置</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924288646-310c0756-2d27-4a5c-a0dc-cd7a085af725-093060.png" alt="038.png"></p>
+<h3 id="FreeRTOS移植"><a href="#FreeRTOS移植" class="headerlink" title="FreeRTOS移植:"></a>FreeRTOS移植<a target="_blank" rel="noopener" href="https://arm-software.github.io/CMSIS-FreeRTOS/latest/index.html">:</a></h3><h4 id="FreeRTOS源码裁剪"><a href="#FreeRTOS源码裁剪" class="headerlink" title="FreeRTOS源码裁剪."></a>FreeRTOS源码裁剪<a target="_blank" rel="noopener" href="https://www.keil.arm.com/packs/cmsis-freertos-arm/versions/">.</a></h4><ol>
+<li>源码解压</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924446506-043d616a-6665-498f-a4ab-44aac359783f-006134.png" alt="039.png"></p>
+<ol start="2">
+<li>进入<code>FreeRTOS/Source</code>目录。此目录就是我们要移植的源码。</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924670075-06a4edf0-4e5d-4522-8c0a-a4ff23b4af08-828618.png" alt="040.png"></p>
+<ol start="3">
+<li>在你新建的<code>FreeRTOSTemplate</code>工程目录下，新建一个文件夹<code>FreeRTOS</code>,将以上源码拷贝到这个文件夹中。</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687924874970-0ef06487-557c-472d-94af-6c7bf305a046-621043.png" alt="041.png"></p>
+<ol start="4">
+<li>删除不必要的文件。来到<code>portable</code>目录只保留<code>GCC</code>和<code>MemManag</code>目录</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687925151042-00b53bce-6a07-4678-a514-c9010255cd8e-395035.png" alt="042.png"></p>
+<h4 id="源码目录构建"><a href="#源码目录构建" class="headerlink" title="源码目录构建"></a>源码目录构建</h4><ol>
+<li>新建两个Group：<code>FreeRTOS_Core</code>和<code>FreeRTOS_Port</code></li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687925371537-7e217525-e531-4bf0-b63b-39a7175b3e07-950867.png" alt="043.png"></p>
+<ol start="2">
+<li><code>FreeRTOS_Core</code>添加源码。源码为<code>FreeRTOS</code>根目录下的<code>c文件</code></li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687926509097-7e90d55b-6609-41a5-a04b-2ff7a5f3f2a7-601234.png" alt="044.png"><br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687926532303-133ff207-3b9d-42a0-afd1-0fbba432f870-286233.png" alt="045.png"></p>
+<ol start="3">
+<li><code>FreeRTOS_Port</code>添加源码。源码为<code>FreeRTOS/portable/MemMang</code>下的<code>heap_4.c</code>。源码为<code>FreeRTOS/portable/GCC/ARM_CM4F</code>下的<code>port.c</code></li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687926975547-79becb59-dd1c-4587-a455-dae00f113210-877734.png" alt="046.png"><img src="/blog/./img/iH8LOSDeXYxuWXus/1687926988880-1ecffdbf-8eae-4acd-bed4-f8a279d563dc-771581.png" alt="047.png"></p>
+<ol start="4">
+<li>添加头文件支持。将<code>FreeRTOS/include</code>和<code>FreeRTOS/portable/GCC/ARM_CM4F</code>添加到头文件依赖中。</li>
+</ol>
+<p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687927187496-6d9fccb9-f9e9-4582-935f-8f22cb3f7de4-346370.png" alt="048.png"></p>
+<h4 id="FreeRTOSConfig-h文件缺失解决"><a href="#FreeRTOSConfig-h文件缺失解决" class="headerlink" title="FreeRTOSConfig.h文件缺失解决"></a>FreeRTOSConfig.h文件缺失解决</h4><p>编译项目，会出现以下错误：<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687927433261-44142497-779b-4f71-8457-18f757d28a33-589522.png" alt="049.png"><br>来到FreeRTOS源码目录中，找到<code>FreeRTOSv202212.01\FreeRTOS\Demo\CORTEX_M4F_STM32F407ZG-SK</code>目录中的<code>FreeRTOSConfig.h</code>文件，进行拷贝。<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687930820306-a7eb2cb5-9654-4e4b-b5f0-7402b81d0b73-536565.png" alt="050.png"><br>将<code>FreeRTOSConfig.h</code>文件拷贝到项目目录中的<code>FreeRTOS</code>目录下<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687930994065-6323ead0-5d9d-430a-b72a-b799f5f4e8ca-626144.png" alt="051.png"><br>添加头文件引入。将<code>FreeRTOS</code>目录添加到<strong>include path</strong>中。<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687931076202-385101d9-dd83-407e-996e-dd2f061ff476-706908.png" alt="052.png"></p>
+<h4 id="SystemCoreClock问题解决"><a href="#SystemCoreClock问题解决" class="headerlink" title="SystemCoreClock问题解决"></a>SystemCoreClock问题解决</h4><p>编译项目，会出现以下错误：<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687931186520-81763c9d-2102-460f-8031-8156b8ebdafb-515148.png" alt="053.png"><br>来到<code>FreeRTOSConfig.h</code>文件中，观察以下内容:<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687931381052-97d9b808-8911-4c1f-93c5-75cfb0229a3d-180286.png" alt="054.png"></p>
+<ol>
+<li>SystemCoreClock其实是有的</li>
+<li>SystemCoreClock在编译预处理前没有被定义出来。原因是<code>extern uint32_t SystemCoreClock;</code>这一段没有进入编译，因为在编译预处理前不满足<code>#ifdef __ICCARM__</code>这个条件。编译器c语言条件不满足。我们将以上代码进行修改。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifdef</span> __ICCARM__</span></span><br><span class="line">	<span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line">	<span class="keyword">extern</span> <span class="type">uint32_t</span> SystemCoreClock;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">if</span> defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)</span></span><br><span class="line">	<span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdint.h&gt;</span></span></span><br><span class="line">	<span class="keyword">extern</span> <span class="type">uint32_t</span> SystemCoreClock;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h4 id="xxx-Handler问题解决"><a href="#xxx-Handler问题解决" class="headerlink" title="xxx_Handler问题解决"></a>xxx_Handler问题解决</h4><p>编译项目，会出现以下错误：<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687931808337-ccbcad71-d211-43e7-81bf-7ff69f49f0fa-444067.png" alt="055.png"><br>来到<code>gd32f4xx_it.c</code>文件中。修改三个函数<code>SVC_Handler</code>,<code>PendSV_Handler</code>,<code>SysTick_Handler</code>,将函数通过宏定义包裹:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SYS_SUPPORT_OS</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>修改后如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SYS_SUPPORT_OS</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">SVC_Handler</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SYS_SUPPORT_OS</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">PendSV_Handler</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">    </span><br><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SYS_SUPPORT_OS</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">SysTick_Handler</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    delay_decrement();</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<p>配置<code>C/C++(AC6)</code>中的<code>define</code>为：<code>USE_STDPERIPH_DRIVER,GD32F470,SYS_SUPPORT_OS</code><br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687932362934-eae18705-bdd3-407a-870c-f2ec5b40cd1c-801070.png" alt="056.png"></p>
+<h4 id="vApplicationXXXHook问题解决"><a href="#vApplicationXXXHook问题解决" class="headerlink" title="vApplicationXXXHook问题解决"></a>vApplicationXXXHook问题解决</h4><p>编译项目，会出现以下错误：<br><img src="/blog/./img/iH8LOSDeXYxuWXus/1687932447985-53a60db7-0af4-4136-93b7-8e92c672f0ac-143115.png" alt="057.png"><br>修改<code>FreeRTOSConfig.h</code>中的配置：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> configCHECK_FOR_STACK_OVERFLOW	0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> configUSE_IDLE_HOOK				0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> configUSE_TICK_HOOK				0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> configUSE_MALLOC_FAILED_HOOK	0</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="Systick硬件delay"><a href="#Systick硬件delay" class="headerlink" title="Systick硬件delay"></a>Systick硬件delay</h4><p>修改<code>systick.c</code>源码，修改如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> SYS_SUPPORT_OS</span></span><br><span class="line"><span class="comment">// 微秒</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">delay_1us</span><span class="params">(<span class="type">uint32_t</span> count)</span></span><br><span class="line">&#123;</span><br><span class="line">  delay = count;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span>(<span class="number">0U</span> != delay) &#123;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 毫秒</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">delay_1ms</span><span class="params">(<span class="type">uint32_t</span> count)</span></span><br><span class="line">&#123;</span><br><span class="line">    delay = count * <span class="number">1000</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">0U</span> != delay) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">delay_decrement</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span>(<span class="number">0U</span> != delay) &#123;</span><br><span class="line">        delay--;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">else</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">delay_1us</span><span class="params">(<span class="type">uint32_t</span> count)</span> &#123;</span><br><span class="line">		<span class="type">uint32_t</span> ticks;</span><br><span class="line">		<span class="type">uint32_t</span> told, tnow, reload, tcnt = <span class="number">0</span>;</span><br><span class="line">		reload = SysTick-&gt;LOAD;</span><br><span class="line">		ticks = count * (SystemCoreClock / <span class="number">1000000</span>);</span><br><span class="line">		told = SysTick-&gt;VAL;</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">				tnow=SysTick-&gt;VAL;</span><br><span class="line">				<span class="keyword">if</span>(tnow != told) &#123;</span><br><span class="line">						<span class="keyword">if</span>(tnow&lt;told) tcnt+=told-tnow;</span><br><span class="line">						<span class="keyword">else</span> tcnt+=reload-tnow+told;</span><br><span class="line">						told=tnow;</span><br><span class="line">						</span><br><span class="line">						<span class="keyword">if</span>(tcnt&gt;=ticks)<span class="keyword">break</span>;</span><br><span class="line">				&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">&#125;</span><br><span class="line"><span class="type">void</span> <span class="title function_">delay_1ms</span><span class="params">(<span class="type">uint32_t</span> count)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">uint32_t</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt;count; i++)</span><br><span class="line">    &#123;</span><br><span class="line">        delay_1us(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="LED点亮测试"><a href="#LED点亮测试" class="headerlink" title="LED点亮测试"></a>LED点亮测试</h3><p><img src="/blog/./img/iH8LOSDeXYxuWXus/1687933164629-1f6eecf8-0917-4883-a7b9-7b4058a9bc37-582793.png" alt="009.png"><br>开启任务，点亮<code>PE3</code>和<code>PD7</code><br>在main.c中编写代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;gd32f4xx.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;systick.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;task.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">TaskHandle_t            StartTask_Handler;</span><br><span class="line">TaskHandle_t            Task1_Handler;</span><br><span class="line">TaskHandle_t            Task2_Handler;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">task1</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        vTaskDelay(<span class="number">300</span>);</span><br><span class="line">        gpio_bit_set(GPIOE, GPIO_PIN_3);</span><br><span class="line">        vTaskDelay(<span class="number">300</span>);</span><br><span class="line">        gpio_bit_reset(GPIOE, GPIO_PIN_3);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">task2</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        vTaskDelay(<span class="number">1000</span>);</span><br><span class="line">        gpio_bit_set(GPIOD, GPIO_PIN_7);</span><br><span class="line">        vTaskDelay(<span class="number">1000</span>);</span><br><span class="line">        gpio_bit_reset(GPIOD, GPIO_PIN_7);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">GPIO_config</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 时钟初始化</span></span><br><span class="line">    rcu_periph_clock_enable(RCU_GPIOE);</span><br><span class="line">    <span class="comment">// 2. 配置GPIO 输入输出模式</span></span><br><span class="line">    gpio_mode_set(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_3);</span><br><span class="line">    <span class="comment">// 3. 配置GPIO 模式的操作方式</span></span><br><span class="line">    gpio_output_options_set(GPIOE, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_3);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1. 时钟初始化</span></span><br><span class="line">    rcu_periph_clock_enable(RCU_GPIOD);</span><br><span class="line">    <span class="comment">// 2. 配置GPIO 输入输出模式</span></span><br><span class="line">    gpio_mode_set(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO_PIN_7);</span><br><span class="line">    <span class="comment">// 3. 配置GPIO 模式的操作方式</span></span><br><span class="line">    gpio_output_options_set(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_MAX, GPIO_PIN_7);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">start_task</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    GPIO_config();</span><br><span class="line"></span><br><span class="line">    taskENTER_CRITICAL();</span><br><span class="line"></span><br><span class="line">    xTaskCreate((TaskFunction_t)task1, </span><br><span class="line">                (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;task1&quot;</span>,</span><br><span class="line">                <span class="number">50</span>,</span><br><span class="line">                <span class="literal">NULL</span>,</span><br><span class="line">                <span class="number">2</span>, </span><br><span class="line">                (TaskHandle_t*  )&amp;Task1_Handler);</span><br><span class="line">    xTaskCreate((TaskFunction_t)task2, </span><br><span class="line">                (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;task2&quot;</span>,</span><br><span class="line">                <span class="number">50</span>,</span><br><span class="line">                <span class="literal">NULL</span>,</span><br><span class="line">                <span class="number">2</span>, </span><br><span class="line">                (TaskHandle_t*  )&amp;Task2_Handler);</span><br><span class="line">    vTaskDelete(StartTask_Handler);</span><br><span class="line"></span><br><span class="line">    taskEXIT_CRITICAL();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);</span><br><span class="line"></span><br><span class="line">    xTaskCreate((TaskFunction_t)start_task, </span><br><span class="line">                    (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;start_task&quot;</span>,</span><br><span class="line">                    <span class="number">128</span>,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </span><br><span class="line">                    <span class="literal">NULL</span>,</span><br><span class="line">                    <span class="number">1</span>, </span><br><span class="line">                    (TaskHandle_t*  )&amp;StartTask_Handler);</span><br><span class="line">    vTaskStartScheduler();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这里有两个注意点：</p>
+<ol>
+<li><p>不能再自行调用<code>systick_config();</code>，因为FreeRTOS已经初始化了systick，再次配置会覆盖掉系统的配置，导致任务执行异常。</p>
+</li>
+<li><p>main开始位置需要根据FreeRTOS的权限等级，配置全局中断优先级分组：</p>
+<pre><code> `nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);`
+</code></pre>
+</li>
+</ol>
+<h2 id="HelloWorld"><a href="#HelloWorld" class="headerlink" title="HelloWorld"></a>HelloWorld</h2><p>实现多任务串口打印功能。<br>开发流程：</p>
+<ol>
+<li>通过模板创建项目</li>
+<li>添加串口支持库</li>
+<li>添加所需要c依赖，以及包含所需要h头</li>
+<li>运行测试，查看效果。<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;gd32f4xx.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;systick.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;main.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;FreeRTOS.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;task.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Usart0.h&quot;</span></span></span><br><span class="line"></span><br><span class="line">TaskHandle_t            StartTask_Handler;</span><br><span class="line">TaskHandle_t            Task1_Handler;</span><br><span class="line">TaskHandle_t            Task2_Handler;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">task1</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        vTaskDelay(<span class="number">500</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;task 1\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">task2</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">        vTaskDelay(<span class="number">1000</span>);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;task 2\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">start_task</span><span class="params">(<span class="type">void</span> *pvParameters)</span> &#123;</span><br><span class="line">    Usart0_init();</span><br><span class="line"></span><br><span class="line">    taskENTER_CRITICAL();</span><br><span class="line"></span><br><span class="line">    xTaskCreate((TaskFunction_t)task1, </span><br><span class="line">                (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;task1&quot;</span>,</span><br><span class="line">                <span class="number">50</span>,</span><br><span class="line">                <span class="literal">NULL</span>,</span><br><span class="line">                <span class="number">2</span>, </span><br><span class="line">                (TaskHandle_t*  )&amp;Task1_Handler);</span><br><span class="line">    xTaskCreate((TaskFunction_t)task2, </span><br><span class="line">                (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;task2&quot;</span>,</span><br><span class="line">                <span class="number">50</span>,</span><br><span class="line">                <span class="literal">NULL</span>,</span><br><span class="line">                <span class="number">2</span>, </span><br><span class="line">                (TaskHandle_t*  )&amp;Task2_Handler);</span><br><span class="line">    vTaskDelete(StartTask_Handler);</span><br><span class="line"></span><br><span class="line">    taskEXIT_CRITICAL();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_recv</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> len)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;recv: %s\n&quot;</span>, data);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    nvic_priority_group_set(NVIC_PRIGROUP_PRE4_SUB0);</span><br><span class="line"></span><br><span class="line">    xTaskCreate((TaskFunction_t)start_task, </span><br><span class="line">                    (<span class="type">const</span> <span class="type">char</span>*   )<span class="string">&quot;start_task&quot;</span>,</span><br><span class="line">                    <span class="number">128</span>,                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     </span><br><span class="line">                    <span class="literal">NULL</span>,</span><br><span class="line">                    <span class="number">1</span>, </span><br><span class="line">                    (TaskHandle_t*  )&amp;StartTask_Handler);</span><br><span class="line">    vTaskStartScheduler();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span>(<span class="number">1</span>) &#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">ifndef</span> __USART0_H__</span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> __USART0_H__</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;gd32f4xx.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;systick.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> USART0_RECV_CALLBACK 1</span></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_init</span><span class="params">()</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_send_data</span><span class="params">(<span class="type">uint8_t</span> data)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_send_string</span><span class="params">(<span class="type">char</span> *data)</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> USART0_RECV_CALLBACK</span></span><br><span class="line"><span class="keyword">extern</span> <span class="type">void</span> <span class="title function_">Usart0_recv</span><span class="params">(<span class="type">uint8_t</span> *data, <span class="type">uint32_t</span> len)</span>;</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&quot;Usart0.h&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> USART0_RECV_LEN	4096</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint8_t</span> usart0_recv_buff[USART0_RECV_LEN];   <span class="comment">// 接收缓冲区</span></span><br><span class="line"><span class="type">static</span> <span class="type">uint32_t</span> usart0_recv_len = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_init</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">uint32_t</span> usartx = USART0;</span><br><span class="line">    <span class="type">uint32_t</span> usartx_rcu = RCU_USART0;</span><br><span class="line">    <span class="type">uint32_t</span> usartx_irqn = USART0_IRQn;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> tx_gpio_rcu = RCU_GPIOA;</span><br><span class="line">    <span class="type">uint32_t</span> tx_gpio_port = GPIOA;</span><br><span class="line">    <span class="type">uint32_t</span> tx_gpio_pin = GPIO_PIN_9;</span><br><span class="line"></span><br><span class="line">    <span class="type">uint32_t</span> rx_gpio_rcu = RCU_GPIOA;</span><br><span class="line">    <span class="type">uint32_t</span> rx_gpio_port = GPIOA;</span><br><span class="line">    <span class="type">uint32_t</span> rx_gpio_pin = GPIO_PIN_10;</span><br><span class="line">    <span class="comment">////////// gpio config ///////////////</span></span><br><span class="line">    <span class="comment">// 配置时钟</span></span><br><span class="line">    rcu_periph_clock_enable(tx_gpio_rcu);</span><br><span class="line">    rcu_periph_clock_enable(rx_gpio_rcu);</span><br><span class="line">    <span class="comment">// 配置模式</span></span><br><span class="line">    gpio_mode_set(tx_gpio_port, GPIO_MODE_AF, GPIO_PUPD_PULLUP, tx_gpio_pin);</span><br><span class="line">    gpio_mode_set(rx_gpio_port, GPIO_MODE_AF, GPIO_PUPD_PULLUP, rx_gpio_pin);</span><br><span class="line">    <span class="comment">// 配置复用功能</span></span><br><span class="line">    gpio_af_set(tx_gpio_port, GPIO_AF_7, tx_gpio_pin);</span><br><span class="line">    gpio_af_set(rx_gpio_port, GPIO_AF_7, rx_gpio_pin);</span><br><span class="line">    <span class="comment">// 配置输出参数</span></span><br><span class="line">    gpio_output_options_set(tx_gpio_port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, tx_gpio_pin);</span><br><span class="line">    gpio_output_options_set(rx_gpio_port, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, rx_gpio_pin);</span><br><span class="line"></span><br><span class="line">    <span class="comment">////////// usart config /////////////</span></span><br><span class="line">    <span class="comment">// 串口时钟</span></span><br><span class="line">    rcu_periph_clock_enable(usartx_rcu);</span><br><span class="line">    <span class="comment">// USART复位</span></span><br><span class="line">    usart_deinit(usartx);</span><br><span class="line">    usart_baudrate_set(usartx, <span class="number">115200</span>);<span class="comment">// 波特率</span></span><br><span class="line">    usart_parity_config(usartx, USART_PM_NONE);<span class="comment">// 校验位</span></span><br><span class="line">    usart_word_length_set(usartx, USART_WL_8BIT);<span class="comment">// 数据位数</span></span><br><span class="line">    usart_stop_bit_set(usartx, USART_STB_1BIT);<span class="comment">// 停止位</span></span><br><span class="line">    usart_data_first_config(usartx, USART_MSBF_LSB);<span class="comment">// 先发送高位还是低位</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送功能配置</span></span><br><span class="line">    usart_transmit_config(usartx, USART_TRANSMIT_ENABLE);</span><br><span class="line">    <span class="comment">// 接收功能配置</span></span><br><span class="line">    usart_receive_config(usartx, USART_RECEIVE_ENABLE);</span><br><span class="line">    <span class="comment">// 接收中断配置</span></span><br><span class="line">    nvic_irq_enable(usartx_irqn, <span class="number">2</span>, <span class="number">2</span>);</span><br><span class="line">    <span class="comment">// usart int rbne</span></span><br><span class="line">    usart_interrupt_enable(usartx, USART_INT_RBNE);</span><br><span class="line">    usart_interrupt_enable(usartx, USART_INT_IDLE);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使能串口</span></span><br><span class="line">    usart_enable(usartx);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_send_data</span><span class="params">(<span class="type">uint8_t</span> data)</span> &#123;</span><br><span class="line">    <span class="comment">//通过USART发送</span></span><br><span class="line">    usart_data_transmit(USART0, data);</span><br><span class="line">    <span class="comment">//判断缓冲区是否已经空了</span></span><br><span class="line">    <span class="keyword">while</span>(RESET == usart_flag_get(USART0, USART_FLAG_TBE));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//发送字符串</span></span><br><span class="line"><span class="type">void</span> <span class="title function_">Usart0_send_string</span><span class="params">(<span class="type">char</span> *data)</span> &#123;</span><br><span class="line">    <span class="keyword">while</span>(data &amp;&amp; *data) &#123;</span><br><span class="line">        Usart0_send_data((<span class="type">uint8_t</span>)(*data));</span><br><span class="line">        data++;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="type">void</span> <span class="title function_">USART0_IRQHandler</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> ((usart_interrupt_flag_get(USART0, USART_INT_FLAG_RBNE)) == SET) &#123;</span><br><span class="line">        <span class="type">uint16_t</span> value = usart_data_receive(USART0);</span><br><span class="line">        usart0_recv_buff[usart0_recv_len] = value;</span><br><span class="line">        usart0_recv_len++;</span><br><span class="line">        <span class="comment">// 接收到单个byte，可以在此处处理接收到value。<span class="doctag">TODO:</span></span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (usart_interrupt_flag_get(USART0, USART_INT_FLAG_IDLE) == SET) &#123;</span><br><span class="line">        <span class="comment">//读取缓冲区,清空缓冲区</span></span><br><span class="line">        usart_data_receive(USART0);</span><br><span class="line">        usart0_recv_buff[usart0_recv_len] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 接收停止时，缓冲区中的数据，可以在此处处理缓存数据。<span class="doctag">TODO:</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">if</span> USART0_RECV_CALLBACK</span></span><br><span class="line">				Usart0_recv(usart0_recv_buff, usart0_recv_len);</span><br><span class="line"><span class="meta">#<span class="keyword">endif</span></span></span><br><span class="line"></span><br><span class="line">        usart0_recv_len = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">fputc</span><span class="params">(<span class="type">int</span> ch, FILE *f)</span>&#123;</span><br><span class="line">	Usart0_send_data((<span class="type">uint8_t</span>)ch);</span><br><span class="line">	<span class="keyword">return</span> ch;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>JiaJie Gao
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://gaojiajie1993.github.io/blog/2024/03/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/GD32%E7%A7%BB%E6%A4%8DFreeRTOS/" title="GD32移植FreeRTOS">https://gaojiajie1993.github.io/blog/2024/03/13/嵌入式/GD32移植FreeRTOS/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/blog/tags/ARM/" rel="tag"># ARM</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/blog/2024/02/13/%E5%B5%8C%E5%85%A5%E5%BC%8F/USART%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86/" rel="prev" title="USART通信原理">
+                  <i class="fa fa-chevron-left"></i> USART通信原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JiaJie Gao</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">1.2m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">17:29</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="reading-progress-bar"></div>
+
+  <a href="https://github.com/gaojiajie1993/blog" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/blog/js/comments.js"></script><script src="/blog/js/utils.js"></script><script src="/blog/js/motion.js"></script><script src="/blog/js/next-boot.js"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.1/dist/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/blog/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/blog/js/third-party/pace.js"></script>
+
+  
+
+
+
+
+<script src="https://unpkg.com/darkmode-js@1.5.7/lib/darkmode-js.min.js"></script>
+
+<script>
+var options = {
+  bottom: '64px',
+  right: 'unset',
+  left: '32px',
+  time: '0.5s',
+  mixColor: 'transparent',
+  backgroundColor: 'transparent',
+  buttonColorDark: '#100f2c',
+  buttonColorLight: '#fff',
+  saveInCookies: true,
+  label: '🌓',
+  autoMatchOsTheme: true
+}
+const darkmode = new Darkmode(options);
+window.darkmode = darkmode;
+darkmode.showWidget();
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.css" integrity="sha256-AJnUHL7dBv6PGaeyPQJcgQPDjt/Hn/PvYZde1iqfp8U=" crossorigin="anonymous">
+
+<script class="next-config" data-name="gitalk" type="application/json">{"enable":true,"github_id":"gaojiajie1993","repo":"blog","client_id":"c45bc13ca1d3d3aa4836","client_secret":"1907a9f0c22087badad3938e1d7dcba9078f88ac","admin_user":"gaojiajie1993","distraction_free_mode":true,"proxy":"https://cors-anywhere.azm.workers.dev/https://github.com/login/oauth/access_token","language":"zh-CN","js":{"url":"https://cdn.jsdelivr.net/npm/gitalk@1.8.0/dist/gitalk.min.js","integrity":"sha256-MVK9MGD/XJaGyIghSVrONSnoXoGh3IFxLw0zfvzpxR4="},"path_md5":"c2dd539ab4012b72442dc4c6b89ffd78"}</script>
+<script src="/blog/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
